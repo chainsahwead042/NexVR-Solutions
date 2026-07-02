@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXVR Agency — Automations, Chatbots, Voice Agents, Web &amp; App Development</title>
+<meta name="description" content="NEXVR Agency builds automations, chatbots, voice agents, websites, apps, and brand design.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     NEVERA FONT — used on the landing/hero area only.
+     Nevera is a paid font (free version is personal-use only).
+     To activate it:
+       1. Buy/download the font files from https://circlefont.com/product/nevera/
+       2. Create a "fonts" folder next to this HTML file
+       3. Put the files in as fonts/Nevera-Regular.woff2 (and .woff if you have it)
+     Until those files exist, the site automatically falls back to Roboto
+     so nothing breaks.
+  ========================================================= */
+  @font-face{
+    font-family:'Nevera';
+    src:
+      url('fonts/Nevera-Regular.woff2') format('woff2'),
+      url('fonts/Nevera-Regular.woff') format('woff');
+    font-weight:400 900;
+    font-display:swap;
+  }
+  :root{
+    --black:#050309;
+    --near-black:#0d0817;
+    --panel:#140d22;
+    --line:rgba(180,140,255,0.14);
+    --white:#f3f0fb;
+    --grey:#9c8fb8;
+    --grey-dim:#5c4f7d;
+    --accent:#8b5cf6;
+    --accent2:#c9a6ff;
+    --accent-soft:rgba(139,92,246,0.55);
+    --font-landing:'Roboto',sans-serif;
+    --font-hero:'Nevera','Roboto',sans-serif;
+    --font-body:'Josefin Sans',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 70% 50% at 80% 15%, rgba(139,92,246,0.16), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 15% 85%, rgba(139,92,246,0.10), transparent 60%),
+      var(--black);
+    color:var(--white);
+    font-family:var(--font-body);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent);color:var(--white);}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important;}
+  }
+
+  /* ---------- particle canvas ---------- */
+  #particle-canvas{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:fixed;top:0;left:0;width:100%;
+    z-index:60;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px clamp(20px,5vw,56px);
+    background:rgba(8,4,16,0.28);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid transparent;
+    transition:background .4s ease, border-color .4s ease;
+  }
+  .topbar.visible{
+    background:rgba(8,4,16,0.72);
+    border-bottom-color:var(--line);
+  }
+  .topbar-logo{
+    display:flex;align-items:center;gap:9px;
+    font-family:var(--font-landing);
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:0.12em;
+    color:var(--white);
+  }
+  .topbar-logo-mark{
+    width:9px;height:9px;border-radius:2px;
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
+    box-shadow:0 0 10px var(--accent-soft);
+    transform:rotate(45deg);
+    flex:0 0 auto;
+  }
+  .topbar-logo span{
+    background:linear-gradient(120deg,var(--white) 0%,var(--accent2) 45%,var(--accent) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  /* hamburger toggle */
+  .menu-toggle{
+    width:38px;height:38px;flex:0 0 auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    background:none;border:1px solid var(--line);border-radius:6px;
+    transition:border-color .25s ease, background .25s ease;
+  }
+  .menu-toggle:hover{border-color:var(--accent-soft);background:rgba(139,92,246,0.08);}
+  .menu-toggle span{
+    width:16px;height:1.5px;background:var(--white);
+    transition:transform .3s cubic-bezier(.16,1,.3,1), opacity .25s ease;
+  }
+  .menu-toggle.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+  .menu-toggle.open span:nth-child(2){opacity:0;}
+  .menu-toggle.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+  .topbar-cta{
+    font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--white);background:linear-gradient(120deg,var(--accent2),var(--accent));
+    padding:10px 20px;border-radius:50px;border:none;
+    font-weight:600;
+    animation:attn-pulse 2.2s ease-in-out infinite;
+    transition:transform .2s ease, filter .2s ease;
+  }
+  .topbar-cta:hover{transform:scale(1.06);filter:brightness(1.1);}
+
+  /* slide-down menu panel */
+  .menu-panel{
+    position:fixed;top:0;left:0;width:100%;
+    z-index:59;
+    background:rgba(8,4,16,0.92);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line);
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition:max-height .5s cubic-bezier(.16,1,.3,1), opacity .4s ease;
+  }
+  .menu-panel.open{max-height:600px;opacity:1;}
+  .menu-panel-inner{
+    max-width:640px;margin:0 auto;
+    padding:96px 24px 36px;
+  }
+  .menu-section{border-bottom:1px solid var(--line);}
+  .menu-section:last-child{border-bottom:none;}
+  .menu-section-toggle{
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    background:none;border:none;color:var(--white);
+    font-family:var(--font-body);font-weight:500;font-size:18px;
+    padding:20px 4px;
+  }
+  .menu-section-toggle .chev{
+    width:9px;height:9px;flex:0 0 auto;
+    border-right:1.5px solid var(--grey);border-bottom:1.5px solid var(--grey);
+    transform:rotate(45deg);
+    transition:transform .3s ease, border-color .3s ease;
+  }
+  .menu-section.open .menu-section-toggle .chev{transform:rotate(225deg);border-color:var(--accent2);}
+  .menu-section.open .menu-section-toggle{color:var(--accent2);}
+  .submenu{
+    max-height:0;overflow:hidden;
+    transition:max-height .4s cubic-bezier(.16,1,.3,1);
+  }
+  .menu-section.open .submenu{max-height:420px;}
+  .submenu-inner{padding:2px 4px 22px 14px;display:flex;flex-direction:column;gap:2px;}
+  .submenu-inner a,
+  .submenu-inner button{
+    display:flex;align-items:center;gap:10px;
+    text-align:left;background:none;border:none;color:var(--grey);
+    font-family:var(--font-body);font-size:14.5px;
+    padding:10px 10px;border-radius:6px;
+    transition:background .2s ease,color .2s ease,padding-left .2s ease;
+  }
+  .submenu-inner a:hover,
+  .submenu-inner button:hover{background:rgba(139,92,246,0.1);color:var(--white);padding-left:16px;}
+  .submenu-inner .menu-num{
+    font-family:var(--font-landing);font-size:10px;color:var(--accent2);flex:0 0 auto;
+  }
+
+  /* ---------- hero / landing ---------- */
+  .hero{
+    position:relative;
+    height:100vh;
+    min-height:560px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    perspective:1200px;
+    z-index:1;
+  }
+  .hero-inner{
+    text-align:center;
+    will-change:transform;
+    animation:hero-pop-in 1.15s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes hero-pop-in{
+    0%{opacity:0;transform:translateY(46px) scale(0.9);}
+    65%{opacity:1;transform:translateY(-6px) scale(1.015);}
+    100%{opacity:1;transform:translateY(0) scale(1);}
+  }
+  .hero-eyebrow{
+    font-family:var(--font-hero);
+    font-size:12px;
+    letter-spacing:0.32em;
+    text-transform:uppercase;
+    color:var(--grey);
+    margin-bottom:22px;
+  }
+  .hero-logo{
+    font-family:var(--font-hero);
+    font-weight:900;
+    font-size:clamp(2.6rem,10vw,7.5rem);
+    letter-spacing:0.02em;
+    background:linear-gradient(120deg,var(--white) 0%,var(--accent2) 50%,var(--accent) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    line-height:1;
+    filter:
+      drop-shadow(0 0 10px rgba(255,255,255,0.35))
+      drop-shadow(0 0 30px var(--accent-soft))
+      drop-shadow(0 0 70px rgba(139,92,246,0.35));
+    animation:flicker 5s infinite;
+  }
+  .hero-logo .x{
+    background:linear-gradient(120deg,var(--accent2),var(--accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  @keyframes flicker{
+    0%,100%{opacity:1;}
+    4%{opacity:0.82;}
+    8%{opacity:1;}
+    20%{opacity:0.4;}
+    22%{opacity:1;}
+    55%{opacity:1;}
+    57%{opacity:0.7;}
+    60%{opacity:1;}
+    78%{opacity:0.3;}
+    80%{opacity:1;}
+  }
+  .hero-logo.burst{opacity:0.18 !important;}
+  .hero-sub{
+    margin-top:24px;
+    font-family:var(--font-hero);
+    font-weight:300;
+    font-size:clamp(13px,1.6vw,17px);
+    letter-spacing:0.04em;
+    color:var(--grey);
+  }
+  .hero-scroll-cue{
+    position:absolute;bottom:80px;left:50%;
+    transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    font-family:var(--font-hero);
+    font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--grey);
+  }
+  .hero-scroll-cue .chevrons{
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    animation:scroll-bounce 1.5s cubic-bezier(.45,0,.55,1) infinite;
+  }
+  .hero-scroll-cue .chevrons span{
+    display:block;
+    width:14px;height:14px;
+    border-right:2px solid var(--accent2);
+    border-bottom:2px solid var(--accent2);
+    transform:rotate(45deg);
+    filter:drop-shadow(0 0 5px var(--accent-soft));
+  }
+  .hero-scroll-cue .chevrons span:nth-child(2){opacity:0.55;margin-top:-7px;}
+  .hero-scroll-cue .chevrons span:nth-child(3){opacity:0.25;margin-top:-7px;}
+  @keyframes scroll-bounce{
+    0%{transform:translateY(0);}
+    20%{transform:translateY(8px);}
+    40%{transform:translateY(0);}
+    55%{transform:translateY(3px);}
+    70%{transform:translateY(0);}
+    100%{transform:translateY(0);}
+  }
+
+  main{position:relative;z-index:1;}
+
+  /* ---------- services intro (with swirl line running through it) ---------- */
+  .services-section{
+    position:relative;
+    padding:160px clamp(20px,8vw,120px) 160px;
+  }
+  .swirl-bg{
+    position:absolute;top:0;left:0;
+    width:100%;height:100%;
+    overflow:visible;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.7;
+  }
+  #swirl-path{
+    fill:none;
+    stroke:var(--accent);
+    stroke-width:2;
+    stroke-linecap:round;
+    filter:drop-shadow(0 0 8px rgba(139,92,246,0.6));
+  }
+  .section-kicker{
+    position:relative;z-index:1;
+    font-size:12px;letter-spacing:0.3em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:18px;
+  }
+  .services-title{
+    position:relative;z-index:1;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:clamp(1.8rem,4.4vw,3.4rem);
+    max-width:760px;
+    margin:0 0 90px;
+    line-height:1.15;
+  }
+  .services-list{
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;border-top:1px solid var(--line);
+  }
+  .service-item{
+    display:flex;align-items:center;gap:clamp(20px,4vw,48px);
+    padding:30px 0;
+    border-bottom:1px solid var(--line);
+    transition:padding .3s ease;
+  }
+  .service-num{
+    width:56px;height:56px;flex:0 0 auto;
+    border:1px solid var(--grey-dim);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-landing);font-size:14px;color:var(--grey);
+    transition:all .5s cubic-bezier(.16,1,.3,1);
+    background:var(--black);
+  }
+  .service-label{
+    font-weight:400;font-size:clamp(1.4rem,3.2vw,2.6rem);
+    color:var(--grey-dim);
+    transition:color .5s ease, text-shadow .5s ease, letter-spacing .5s ease;
+  }
+  .service-item.active .service-num{
+    background:var(--white);color:#000;border-color:var(--white);
+    box-shadow:0 0 24px var(--accent-soft);
+  }
+  .service-item.active .service-label{
+    color:var(--white);
+    letter-spacing:0.01em;
+    text-shadow:0 0 18px rgba(255,255,255,0.25);
+  }
+
+  /* ---------- showcase blocks ---------- */
+  .showcase-intro{
+    padding:60px clamp(20px,8vw,120px) 0;
+    overflow:hidden;
+    scroll-margin-top:90px;
+  }
+  .showcase-intro h2{
+    font-weight:500;
+    font-size:clamp(1.8rem,5vw,3.8rem);
+    margin:0;
+    max-width:900px;
+  }
+  .reveal-word{
+    display:inline-block;
+    overflow:hidden;
+    vertical-align:top;
+    margin-right:0.28em;
+  }
+  .reveal-word span{
+    display:inline-block;
+    transform:translateY(115%) rotateX(55deg) scale(0.85);
+    filter:blur(10px);
+    opacity:0;
+    transition:transform .85s cubic-bezier(.16,1,.3,1), filter .85s cubic-bezier(.16,1,.3,1), opacity .7s ease;
+    transition-delay:var(--d,0ms);
+  }
+  .showcase-intro.in-view .reveal-word span{
+    transform:translateY(0) rotateX(0) scale(1);
+    filter:blur(0);
+    opacity:1;
+  }
+
+  .stack-wrapper{position:relative;}
+  .stack-sticky{
+    position:sticky;top:0;
+    height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    background:var(--black);
+  }
+  .project-card{
+    position:absolute;top:50%;left:50%;
+    width:min(640px,86vw);
+    transform:translate(-50%,-50%);
+    opacity:0;
+    pointer-events:none;
+    will-change:transform,opacity;
+    background:var(--black);
+    padding:18px;
+    border-radius:12px;
+    transition:transform .3s cubic-bezier(.16,1,.3,1);
+    /* no opacity transition — swap is instant and opaque */
+  }
+  .project-image{
+    width:100%;
+    aspect-ratio:16/10;
+    border:3px solid var(--accent);
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(139,92,246,0.04);
+    box-shadow:
+      0 0 22px rgba(139,92,246,0.55),
+      0 0 60px rgba(139,92,246,0.28),
+      inset 0 0 30px rgba(139,92,246,0.12);
+    animation:project-glow-pulse 3.6s ease-in-out infinite;
+  }
+  @keyframes project-glow-pulse{
+    0%,100%{
+      box-shadow:
+        0 0 22px rgba(139,92,246,0.55),
+        0 0 60px rgba(139,92,246,0.28),
+        inset 0 0 30px rgba(139,92,246,0.12);
+      border-color:var(--accent);
+    }
+    50%{
+      box-shadow:
+        0 0 34px rgba(139,92,246,0.8),
+        0 0 90px rgba(139,92,246,0.4),
+        inset 0 0 40px rgba(139,92,246,0.18);
+      border-color:var(--accent2);
+    }
+  }
+  .project-image span{
+    font-family:var(--font-landing);
+    font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--grey-dim);
+  }
+  .project-info{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:18px;flex-wrap:wrap;
+    margin-top:22px;
+  }
+  .project-meta p{margin:0;}
+  .project-name{font-size:18px;font-weight:500;color:var(--white);}
+  .project-owner{font-size:13px;color:var(--grey);margin-top:4px;}
+  .project-actions{display:flex;gap:10px;flex:0 0 auto;}
+  .btn{
+    font-size:12px;letter-spacing:0.07em;text-transform:uppercase;
+    padding:11px 18px;border-radius:3px;border:1px solid var(--line);
+    background:transparent;color:var(--white);
+    transition:border-color .25s ease, color .25s ease, box-shadow .25s ease;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn.solid{background:var(--white);color:#000;border-color:var(--white);}
+  .btn.solid:hover{box-shadow:0 0 18px var(--accent-soft);color:#000;border-color:var(--white);}
+
+  /* ---------- final CTA ---------- */
+  .final-cta{
+    padding:200px clamp(20px,8vw,120px);
+    text-align:center;
+  }
+  .final-cta p.kicker{color:var(--grey);font-size:13px;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:26px;}
+  .cta-btn{
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:clamp(1rem,2.4vw,1.4rem);
+    letter-spacing:0.05em;text-transform:uppercase;
+    color:var(--white);background:linear-gradient(120deg,var(--accent2),var(--accent));
+    border:none;border-radius:50px;
+    padding:24px 56px;
+    animation:attn-pulse 2.2s ease-in-out infinite, attn-shake 4.5s ease-in-out infinite;
+    transition:transform .2s ease, filter .2s ease;
+  }
+  .cta-btn:hover{transform:scale(1.05);filter:brightness(1.1);}
+
+  /* ---------- project detail overlay ---------- */
+  .project-overlay{
+    position:fixed;inset:0;z-index:90;
+    background:var(--black);
+    overflow-y:auto;
+    transform:translateX(100%);
+    transition:transform .5s cubic-bezier(.16,1,.3,1);
+  }
+  .project-overlay.open{transform:translateX(0);}
+  .project-overlay-inner{
+    max-width:860px;margin:0 auto;
+    padding:clamp(80px,12vh,140px) clamp(24px,8vw,80px) 80px;
+  }
+  .project-overlay-back{
+    display:inline-flex;align-items:center;gap:8px;
+    background:none;border:none;
+    color:var(--grey);font-family:var(--font-body);
+    font-size:12px;letter-spacing:0.1em;text-transform:uppercase;
+    margin-bottom:50px;
+    transition:color .2s ease;
+  }
+  .project-overlay-back:hover{color:var(--white);}
+  .project-overlay-back::before{
+    content:'';display:block;width:18px;height:1px;
+    background:currentColor;
+    transition:width .3s ease;
+  }
+  .project-overlay-back:hover::before{width:26px;}
+  .project-overlay-service{
+    font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+    color:var(--accent2);margin-bottom:16px;
+  }
+  .project-overlay-title{
+    font-family:var(--font-hero);font-weight:700;
+    font-size:clamp(2rem,6vw,4.2rem);
+    line-height:1.05;margin:0 0 10px;
+    background:linear-gradient(120deg,var(--white) 0%,var(--accent2) 60%,var(--accent) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .project-overlay-owner{
+    font-size:14px;color:var(--grey);margin-bottom:36px;
+  }
+  .project-overlay-image{
+    width:100%;aspect-ratio:16/9;
+    border:2px solid var(--accent);
+    border-radius:10px;
+    background:rgba(139,92,246,0.05);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:48px;
+    box-shadow:0 0 40px rgba(139,92,246,0.28),inset 0 0 30px rgba(139,92,246,0.08);
+    animation:project-glow-pulse 3.6s ease-in-out infinite;
+  }
+  .project-overlay-image span{
+    font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--grey-dim);
+    font-family:var(--font-landing);
+  }
+  .project-overlay-desc{
+    font-size:clamp(15px,1.8vw,17px);line-height:1.75;
+    color:#ccc;margin-bottom:38px;max-width:640px;
+  }
+  .project-overlay-tags{
+    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:44px;
+  }
+  .project-overlay-tags span{
+    font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    border:1px solid rgba(139,92,246,0.38);
+    color:var(--accent2);padding:6px 13px;border-radius:20px;
+  }
+  .project-overlay-actions{display:flex;gap:14px;flex-wrap:wrap;}
+  .project-overlay-link{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--font-body);font-weight:600;
+    font-size:13px;letter-spacing:0.07em;text-transform:uppercase;
+    color:var(--white);
+    background:linear-gradient(120deg,var(--accent2),var(--accent));
+    padding:15px 32px;border-radius:50px;border:none;
+    animation:attn-pulse 2.2s ease-in-out infinite;
+    transition:transform .2s ease;
+  }
+  .project-overlay-link:hover{transform:scale(1.04);}
+  .project-overlay-contact{
+    display:inline-flex;align-items:center;
+    font-family:var(--font-body);font-weight:500;
+    font-size:13px;letter-spacing:0.07em;text-transform:uppercase;
+    color:var(--grey);padding:15px 28px;border-radius:50px;
+    border:1px solid var(--line);background:none;
+    transition:border-color .25s ease,color .25s ease;
+  }
+  .project-overlay-contact:hover{border-color:var(--accent2);color:var(--white);}
+
+  /* ---------- footer ---------- */
+  .site-footer{
+    border-top:1px solid var(--line);
+    padding:70px clamp(20px,8vw,120px) 50px;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.6fr 1fr 1fr;
+    gap:48px 32px;
+    margin-bottom:60px;
+  }
+  @media(max-width:700px){.footer-grid{grid-template-columns:1fr;}}
+  .footer-brand p.mark{
+    font-family:var(--font-landing);font-weight:900;
+    font-size:22px;letter-spacing:0.1em;margin:0 0 14px;
+    background:linear-gradient(120deg,var(--white) 0%,var(--accent2) 50%,var(--accent) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    display:inline-block;
+  }
+  .footer-brand p.tagline{font-size:13.5px;color:var(--grey);line-height:1.6;max-width:260px;margin:0 0 24px;}
+  .footer-contact-row{display:flex;flex-direction:column;gap:10px;}
+  .footer-contact-row a{
+    display:flex;align-items:center;gap:9px;
+    font-size:13px;color:var(--grey);
+    transition:color .2s ease;
+  }
+  .footer-contact-row a:hover{color:var(--accent2);}
+  .footer-contact-row a .ic{
+    font-size:14px;flex:0 0 auto;color:var(--accent2);
+  }
+  .footer-col-title{
+    font-size:10px;letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--grey-dim);margin-bottom:18px;
+  }
+  .footer-links{display:flex;flex-direction:column;gap:10px;}
+  .footer-links a{font-size:13px;color:var(--grey);transition:color .2s ease;}
+  .footer-links a:hover{color:var(--white);}
+  .footer-bottom{
+    border-top:1px solid var(--line);
+    padding-top:28px;
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;
+    font-size:12px;color:var(--grey-dim);
+  }
+  .footer-bottom a{color:var(--grey-dim);transition:color .2s;}
+  .footer-bottom a:hover{color:var(--grey);}
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(0,0,0,0.78);
+    backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;
+    transition:opacity .3s ease, visibility .3s;
+    padding:20px;
+  }
+  .modal-overlay.open{opacity:1;visibility:visible;}
+  .modal{
+    width:100%;max-width:440px;
+    background:var(--near-black);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:34px;
+    transform:translateY(16px) scale(0.97);
+    transition:transform .3s cubic-bezier(.16,1,.3,1);
+  }
+  .modal-overlay.open .modal{transform:translateY(0) scale(1);}
+  .modal h3{margin:0 0 6px;font-weight:500;font-size:22px;}
+  .modal p.modal-sub{margin:0 0 24px;color:var(--grey);font-size:13px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin-bottom:7px;}
+  .field select,.field input,.field textarea{
+    width:100%;background:#000;border:1px solid var(--line);border-radius:3px;
+    color:var(--white);font-family:var(--font-body);font-size:14px;
+    padding:11px 12px;outline:none;
+    transition:border-color .25s ease;
+  }
+  .field select:focus,.field input:focus,.field textarea:focus{border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:80px;}
+  .modal-context{
+    background:#000;border:1px solid var(--line);border-radius:3px;
+    padding:11px 12px;font-size:14px;color:var(--white);
+  }
+  .modal-context strong{color:var(--accent2);font-weight:600;}
+  .modal-submit{
+    width:100%;margin-top:6px;
+    background:var(--accent);color:var(--white);border:none;border-radius:3px;
+    padding:14px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;
+  }
+  .modal-submit:disabled{opacity:0.6;cursor:default;}
+  .modal-status{margin-top:14px;font-size:13px;color:var(--grey);min-height:18px;}
+  .modal-close{
+    position:absolute;top:18px;right:18px;
+    background:none;border:none;color:var(--grey);font-size:20px;line-height:1;
+  }
+  .modal-close:hover{color:var(--white);}
+  .modal{position:relative;}
+
+
+
+  /* ---------- per-service "get started" CTA ---------- */
+  .service-cta-section{
+    padding:70px clamp(20px,8vw,120px) 90px;
+    display:flex;justify-content:center;
+  }
+  .service-cta-btn{
+    position:relative;
+    font-family:var(--font-body);font-weight:600;
+    font-size:clamp(0.95rem,1.8vw,1.15rem);
+    letter-spacing:0.04em;
+    color:var(--white);
+    background:linear-gradient(120deg,var(--accent2),var(--accent));
+    border:none;border-radius:50px;
+    padding:19px 46px;
+    box-shadow:0 0 0 var(--accent-soft);
+    animation:attn-pulse 2.2s ease-in-out infinite, attn-shake 4.5s ease-in-out infinite;
+    transition:transform .2s ease, filter .2s ease;
+  }
+  .service-cta-btn:hover{transform:scale(1.05);filter:brightness(1.1);}
+
+  /* ---------- shared "attention seeking" CTA treatment ---------- */
+  @keyframes attn-pulse{
+    0%,100%{box-shadow:0 0 16px var(--accent-soft), 0 0 0px rgba(139,92,246,0);}
+    50%{box-shadow:0 0 42px var(--accent-soft), 0 0 80px rgba(139,92,246,0.35);}
+  }
+  @keyframes attn-shake{
+    0%,92%,100%{transform:translateY(0) rotate(0);}
+    93%{transform:translateY(-3px) rotate(-1deg);}
+    94%{transform:translateY(0) rotate(1deg);}
+    95%{transform:translateY(-2px) rotate(-1deg);}
+    96%{transform:translateY(0) rotate(0);}
+  }
+
+
+  /* ---------- admin page (lives at #admin) ---------- */
+  #admin-page{display:none;font-family:var(--font-body);}
+  #admin-page .wrap{max-width:1000px;margin:0 auto;padding:60px 24px;}
+  #admin-page h1{font-family:var(--font-landing);font-weight:900;letter-spacing:0.04em;font-size:1.6rem;margin:0 0 6px;}
+  #admin-page h1 span{color:var(--accent);}
+  #admin-page p.sub{color:var(--grey);margin:0 0 36px;font-size:14px;}
+  #admin-page .login-box{max-width:340px;margin:80px auto;text-align:center;}
+  #admin-page .login-box input{
+    width:100%;background:var(--near-black);border:1px solid var(--line);color:var(--white);
+    padding:13px 14px;border-radius:4px;font-size:14px;margin-bottom:14px;font-family:inherit;
+  }
+  #admin-page .login-box button{
+    width:100%;background:var(--accent);color:var(--white);border:none;border-radius:4px;
+    padding:13px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;font-size:13px;
+  }
+  #admin-page .err{color:#ff7676;font-size:13px;margin-top:12px;min-height:16px;}
+  #admin-page table{width:100%;border-collapse:collapse;font-size:13px;}
+  #admin-page th,#admin-page td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  #admin-page th{color:var(--grey);font-weight:500;text-transform:uppercase;letter-spacing:0.05em;font-size:11px;}
+  #admin-page td.msg{max-width:320px;white-space:pre-wrap;color:#ddd;}
+  #admin-page .pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;border:1px solid var(--line);color:var(--grey);}
+  #admin-page .empty{color:var(--grey);text-align:center;padding:60px 0;}
+  #admin-page .refresh{
+    background:none;border:1px solid var(--line);color:var(--grey);
+    padding:8px 14px;border-radius:4px;font-size:12px;margin-bottom:20px;
+  }
+  #admin-page .refresh:hover{color:var(--white);border-color:var(--accent);}
+  #admin-page .back-link{display:inline-block;margin-bottom:30px;color:var(--grey);font-size:12px;letter-spacing:0.05em;text-transform:uppercase;}
+  #admin-page .back-link:hover{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<div id="site-root">
+
+<nav class="topbar" id="topbar">
+  <div class="topbar-logo"><span class="topbar-logo-mark"></span>NEX<span>VR</span></div>
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="menu-panel" id="menu-panel">
+  <div class="menu-panel-inner">
+
+    <div class="menu-section" id="menu-section-projects">
+      <button class="menu-section-toggle" type="button">
+        View our past projects
+        <span class="chev"></span>
+      </button>
+      <div class="submenu">
+        <div class="submenu-inner" id="menu-projects-list"><!-- filled by JS --></div>
+      </div>
+    </div>
+
+    <div class="menu-section" id="menu-section-contact">
+      <button class="menu-section-toggle" type="button">
+        Contact
+        <span class="chev"></span>
+      </button>
+      <div class="submenu">
+        <div class="submenu-inner">
+          <button type="button" data-open-modal data-target="developer">Contact web developer</button>
+          <button type="button" data-open-modal data-target="owner">Contact website owner</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:24px 4px 8px;">
+      <button class="topbar-cta" style="width:100%;border-radius:6px;padding:15px;font-size:13px;" type="button" data-open-modal data-target="developer">Get our services</button>
+    </div>
+
+  </div>
+</div>
+
+<header class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">AI Automation &nbsp;•&nbsp; Web &nbsp;•&nbsp; Growth</div>
+    <h1 class="hero-logo" id="hero-logo">NE<span class="x">X</span>VR</h1>
+    <p class="hero-sub">We empower businesses with AI automation, intelligent agents, and data-driven growth systems.</p>
+  </div>
+  <div class="hero-scroll-cue">
+    Scroll
+    <div class="chevrons"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<main>
+
+  <section class="services-section" id="services">
+    <svg class="swirl-bg" viewBox="0 0 1000 1400" preserveAspectRatio="none">
+      <path id="swirl-path" d="M120,0
+        C 420,90 -60,260 220,360
+        C 540,480 760,250 880,420
+        C 1010,600 600,640 460,760
+        C 320,880 760,900 700,1040
+        C 650,1160 220,1140 300,1280
+        C 360,1380 600,1370 540,1400" />
+    </svg>
+    <div class="section-kicker">What we do</div>
+    <h2 class="services-title">Six disciplines, one team. Each one built to compound the others.</h2>
+    <div class="services-list" id="services-list"><!-- filled by JS --></div>
+  </section>
+
+  <div id="showcases-root"><!-- filled by JS --></div>
+
+  <section class="final-cta">
+    <p class="kicker">Ready when you are</p>
+    <button class="cta-btn" type="button" data-open-modal data-target="developer">Get our services</button>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <p class="mark">NEXVR</p>
+      <p class="tagline">We build the AI systems, automations, and websites behind growing businesses.</p>
+      <div class="footer-contact-row">
+        <a href="mailto:hello@nexvr.com"><span class="ic">✉</span>hello@nexvr.com</a>
+        <a href="https://www.nexvr.com" target="_blank" rel="noopener"><span class="ic">⊕</span>www.nexvr.com</a>
+        <a href="https://linkedin.com/company/nexvr" target="_blank" rel="noopener"><span class="ic">in</span>/nexvr</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Services</p>
+      <div class="footer-links">
+        <a href="#showcase-ai-agents">AI Agents</a>
+        <a href="#showcase-ai-chatbots">AI Chatbots</a>
+        <a href="#showcase-ai-voice-agents">AI Voice Agents</a>
+        <a href="#showcase-website-design">Website Design</a>
+        <a href="#showcase-app-design">App Design</a>
+        <a href="#showcase-marketing-automation">Marketing Automation</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Get in touch</p>
+      <div class="footer-links" style="margin-bottom:22px;">
+        <a href="javascript:void(0)" data-open-modal data-target="developer">Work with us</a>
+        <a href="javascript:void(0)" data-open-modal data-target="developer">Get a free quote</a>
+        <a href="javascript:void(0)" data-open-modal data-target="owner">Contact a project owner</a>
+      </div>
+      <button class="service-cta-btn" style="font-size:12px;padding:14px 28px;" type="button" data-open-modal data-target="developer">Get started for free</button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="year"></span> NEXVR Agency. All rights reserved.</span>
+    <div style="display:flex;gap:20px;">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<div class="project-overlay" id="project-overlay">
+  <div class="project-overlay-inner">
+    <button class="project-overlay-back" id="project-overlay-back" type="button">Back</button>
+    <p class="project-overlay-service" id="po-service"></p>
+    <h2 class="project-overlay-title" id="po-title"></h2>
+    <p class="project-overlay-owner" id="po-owner"></p>
+    <div class="project-overlay-image"><span>Project image coming soon</span></div>
+    <p class="project-overlay-desc" id="po-desc"></p>
+    <div class="project-overlay-tags" id="po-tags"></div>
+    <div class="project-overlay-actions">
+      <a class="project-overlay-link" id="po-link" href="#" target="_blank" rel="noopener">Visit project ↗</a>
+      <button class="project-overlay-contact" type="button" id="po-contact">Get in touch</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" type="button" id="modal-close" aria-label="Close">&times;</button>
+    <h3>Let's talk</h3>
+    <p class="modal-sub" id="modal-sub">Tell us a bit about what you need.</p>
+    <form id="contact-form">
+      <div class="field" id="modal-context-field" style="display:none;">
+        <label>Contacting</label>
+        <div class="modal-context" id="modal-context"></div>
+      </div>
+      <div class="field" id="modal-target-field">
+        <label for="m-target">I want to contact</label>
+        <select id="m-target" name="contactTarget">
+          <option value="developer">Web developer (NEXVR)</option>
+          <option value="owner">Website owner</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="m-name">Name</label>
+        <input id="m-name" name="name" type="text" required>
+      </div>
+      <div class="field">
+        <label for="m-email">Email</label>
+        <input id="m-email" name="email" type="email" required>
+      </div>
+      <div class="field">
+        <label for="m-message">Message</label>
+        <textarea id="m-message" name="message" required></textarea>
+      </div>
+      <input type="hidden" id="m-service" name="service">
+      <input type="hidden" id="m-project" name="project">
+      <input type="hidden" id="m-developer" name="developer">
+      <button class="modal-submit" type="submit" id="modal-submit">Send</button>
+      <p class="modal-status" id="modal-status"></p>
+    </form>
+  </div>
+</div>
+
+</div><!-- /#site-root -->
+
+<div id="admin-page">
+  <div class="wrap">
+    <a href="#" class="back-link">&larr; Back to site</a>
+    <h1>NEX<span>VR</span> Admin</h1>
+    <p class="sub">Form submissions from the website.</p>
+
+    <div id="admin-login-screen" class="login-box">
+      <input type="password" id="admin-password-input" placeholder="Admin password">
+      <button id="admin-login-btn" type="button">Enter</button>
+      <p class="err" id="admin-login-err"></p>
+    </div>
+
+    <div id="admin-content-screen" style="display:none;">
+      <button class="refresh" id="admin-refresh-btn" type="button">Refresh</button>
+      <div id="admin-table-holder"><p class="empty">Loading&hellip;</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   EDIT ME: paste your Apps Script Web App URL here once deployed.
+   See apps-script.gs for the backend code + setup steps.
+========================================================= */
+const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+/* =========================================================
+   EDIT ME: your services + showcased projects.
+   Swap "Project Title" / "Client Name" / "#" for real ones.
+========================================================= */
+const SERVICES = [
+  { id:"ai-agents", num:"01", label:"AI Agents", plural:"Agents", intro:"See the agents we've deployed",
+    projects:[
+      {name:"Opex SaaS", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"A multi-platform AI agent that connects to WhatsApp, Telegram, Instagram, Gmail and Discord through browser automation. Each user gets their own isolated session with credit tracking, a Node.js/Express backend, SQLite database and real-time updates via Socket.io.",
+       tags:["Node.js","Playwright","WhatsApp","Telegram","SQLite","Socket.io"],
+       url:"#"},
+      {name:"AutoFlow AI Engine", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"An AI-powered marketing automation platform with a natural-language inbox agent that reads, understands and replies to messages across multiple social platforms — Twitter/X, Instagram, LinkedIn, Facebook, TikTok and more.",
+       tags:["AI","Node.js","Multi-platform","OpenAI","Express"],
+       url:"#"}
+    ]},
+  { id:"ai-chatbots", num:"02", label:"AI Chatbots", plural:"Chatbots", intro:"Meet the bots we've built",
+    projects:[
+      {name:"Dr. Omer Zubair Patient Bot", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
+       desc:"An AI chatbot embedded in an orthopedic surgeon's website that answers patient questions about treatments, books appointments and captures leads — all synced to a Google Sheets backend via Apps Script.",
+       tags:["AI Chatbot","Google Sheets","Apps Script","WhatsApp"],
+       url:"#"}
+    ]},
+  { id:"ai-voice-agents", num:"03", label:"AI Voice Agents", plural:"Voice Agents", intro:"Hear what we've built",
+    projects:[
+      {name:"Coming Soon", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"Voice agent projects are in active development. Get in touch to be one of the first businesses we deploy a custom AI voice agent for.",
+       tags:["Twilio","AI Voice","OpenAI"],
+       url:"#"}
+    ]},
+  { id:"website-design", num:"04", label:"Website Design", plural:"Websites", intro:"Look at some of our websites",
+    projects:[
+      {name:"antonthnx.com", owner:"Antony Kent", developer:"Mughera Yasin",
+       desc:"A calisthenics coaching site for UK-based coach Antony Kent. Built as a single immersive HTML file with a dark theme, orange accents, Bebas Neue typography, infinite-scroll testimonials, before/after video sliders, Typeform integration and a Node.js backend deployed on Render.",
+       tags:["HTML/CSS","Node.js","Typeform","YouTube API","Render","Responsive"],
+       url:"https://antonthnx.com"},
+      {name:"Dr. Omer Zubair", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
+       desc:"A full website for a UK-trained orthopedic surgeon in Lahore. White/green theme, tabbed treatment navigation, floating CTAs, WhatsApp and Google Ads GCLID tracking, a blog CMS with posts stored in GitHub and deployed via Cloudflare Workers, and a hidden admin panel.",
+       tags:["HTML/CSS","Apps Script","GitHub","Cloudflare Workers","GCLID Tracking"],
+       url:"#"},
+      {name:"KOKO Japan Cars", owner:"KOKO Japan Cars", developer:"Mughera Yasin",
+       desc:"A single-file HTML redesign for a JDM car dealership with a black/lime-yellow F1 racing theme. Features a real car inventory with JPY/USD pricing, event cards, a YouTube embed, ambient ember particle system and 3D tilt-on-hover game-UI inventory cards.",
+       tags:["HTML/CSS","Particles","3D Tilt","Inventory System"],
+       url:"#"},
+      {name:"Fobix Agency", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"An immersive CRT/Game Boy nostalgia website for NEXVR's own brand. Features Web Audio API ambient sound (A minor drone, melody, CRT crackle), retro device UI elements (Game Boy, Winamp, iPod, PS3 XMB), barrel-distortion scroll and a click-to-enter intro.",
+       tags:["HTML/CSS","Web Audio API","Retro UI","Single File"],
+       url:"https://fobix.vercel.app"},
+      {name:"Med School Insiders Redesign", owner:"Med School Insiders", developer:"Mughera Yasin",
+       desc:"A dark aesthetic redesign concept for Med School Insiders in a pixelscreen/antonthnx style — black/blue palette, Space Mono font, scanline overlay, glassmorphism nav, preserving all original functional links.",
+       tags:["HTML/CSS","Dark Theme","Glassmorphism","Scanlines"],
+       url:"#"}
+    ]},
+  { id:"app-design", num:"05", label:"App Design", plural:"Apps", intro:"Explore the apps we've built",
+    projects:[
+      {name:"NeoLanse", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"A React-based AI lead hunter SaaS for freelancers. Scans multiple platforms for potential leads, drafts AI-personalised outreach messages and builds trust through a smart attachment flow. Shipped as a downloadable GitHub-ready zip with dark mode and neon yellow accents.",
+       tags:["React","AI","Lead Gen","Dark Mode","SaaS"],
+       url:"#"},
+      {name:"LanceIt", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"A YouTube creator lead generation tool that finds channels in your niche, drafts personalised outreach emails via the Claude API and sends them through Gmail OAuth — all from a Node.js/Express backend with SQLite and a freemium model via Freemius.",
+       tags:["Node.js","YouTube API","Gmail OAuth","Claude API","SQLite"],
+       url:"#"},
+      {name:"AutoFlow SaaS", owner:"NEXVR", developer:"Mughera Yasin",
+       desc:"A full AI marketing automation platform with a React dashboard. Handles multi-platform publishing, an AI inbox agent for natural-language message handling, and ngrok webhook auto-registration for seamless local-to-live deployment.",
+       tags:["React","Node.js","Multi-platform","AI","Webhooks"],
+       url:"#"}
+    ]},
+  { id:"marketing-automation", num:"06", label:"Marketing Automation", plural:"Automations", intro:"Browse our growth systems",
+    projects:[
+      {name:"Serplix Surplus Recovery", owner:"Serplix", developer:"Mughera Yasin",
+       desc:"A two-workflow n8n automation system for legitimate surplus fund recovery outreach across USA, Canada, England, Australia and Dubai. Features a Google Sheets CRM backbone, APIFlash screenshot proof of outreach, email sequences and automated negotiation logic.",
+       tags:["n8n","Google Sheets","Email Automation","APIFlash","Multi-country"],
+       url:"#"},
+      {name:"Dr. Omer GCLID Tracker", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
+       desc:"A Google Apps Script system that captures Google Ads click IDs (GCLIDs) from incoming patients, logs them to a Google Sheet alongside patient details, and ties ad spend back to actual bookings — giving the clinic full attribution on paid traffic.",
+       tags:["Google Apps Script","Google Ads","GCLID","Attribution","Sheets"],
+       url:"#"}
+    ]}
+];
+
+
+/* ---------------- render showcase blocks ---------------- */
+const showcasesRoot = document.getElementById('showcases-root');
+showcasesRoot.innerHTML = SERVICES.map(s => {
+  const words = s.intro.split(' ').map((w,i) => `<span class="reveal-word"><span style="--d:${i*70}ms">${w}</span></span>`).join(' ');
+  const cardsHTML = s.projects.map((p,i) => `
+    <article class="project-card" data-index="${i}">
+      <div class="project-image"><span>Image placeholder</span></div>
+      <div class="project-info">
+        <div class="project-meta">
+          <p class="project-name">${p.name}</p>
+          <p class="project-owner">Built for ${p.owner} — by Mughera Yasin</p>
+        </div>
+        <div class="project-actions">
+          <button class="btn" type="button" data-open-modal data-target="project-developer" data-service="${s.label}" data-project="${p.name}" data-developer="${p.developer}">Contact developer</button>
+          <button class="btn solid" type="button" data-open-project data-service="${s.label}" data-index="${i}" data-sid="${s.id}">See project</button>
+        </div>
+      </div>
+    </article>
+  `).join('');
+  return `
+    <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
+      <h2>${words}</h2>
+    </section>
+    <div class="stack-wrapper" style="height:${s.projects.length * 100}vh;">
+      <div class="stack-sticky">
+        ${cardsHTML}
+      </div>
+    </div>
+    <section class="service-cta-section">
+      <button class="service-cta-btn" type="button" data-open-modal data-target="developer" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
+    </section>
+  `;
+}).join('');
+
+/* ---------------- particle background ---------------- */
+const canvas = document.getElementById('particle-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
+let scrollY = window.scrollY;
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+function initParticles(){
+  particles = [];
+  const count = Math.min(150, Math.floor((window.innerWidth*window.innerHeight)/9000));
+  for(let i=0;i<count;i++){
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      z: Math.random()*0.9 + 0.25,
+      vy: Math.random()*0.18 + 0.04,
+      r: Math.random()*1.5 + 0.4,
+      accent: Math.random() < 0.16
+    });
+  }
+}
+window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+resizeCanvas();
+initParticles();
+
+window.addEventListener('mousemove', e => {
+  targetMouseX = (e.clientX / window.innerWidth) - 0.5;
+  targetMouseY = (e.clientY / window.innerHeight) - 0.5;
+}, {passive:true});
+window.addEventListener('scroll', () => { scrollY = window.scrollY; }, {passive:true});
+
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+/* ---------------- swirl path setup ---------------- */
+const swirlPath = document.getElementById('swirl-path');
+const swirlSection = document.getElementById('services');
+let swirlLen = 0;
+function setupSwirl(){
+  swirlLen = swirlPath.getTotalLength();
+  swirlPath.style.strokeDasharray = swirlLen;
+  swirlPath.style.strokeDashoffset = swirlLen;
+}
+setupSwirl();
+window.addEventListener('resize', setupSwirl);
+
+/* ---------------- stack wrappers ---------------- */
+const stackWrappers = Array.from(document.querySelectorAll('.stack-wrapper'));
+
+/* ---------------- render services list + menu projects list ---------------- */
+const servicesListEl = document.getElementById('services-list');
+servicesListEl.innerHTML = SERVICES.map(s => `
+  <div class="service-item" id="service-${s.id}">
+    <div class="service-num">${s.num}</div>
+    <div class="service-label">${s.label}</div>
+  </div>
+`).join('');
+
+document.getElementById('menu-projects-list').innerHTML = SERVICES.map(s =>
+  `<a href="#showcase-${s.id}"><span class="menu-num">${s.num}</span>Previous ${s.plural}</a>`
+).join('');
+
+/* ---------------- topbar ---------------- */
+const topbar = document.getElementById('topbar');
+const heroEl = document.getElementById('hero');
+const heroInner = document.querySelector('.hero-inner');
+
+/* ---------------- hamburger menu panel ---------------- */
+const menuToggle = document.getElementById('menu-toggle');
+const menuPanel = document.getElementById('menu-panel');
+const menuSections = document.querySelectorAll('.menu-section');
+
+function closeMenuPanel(){
+  menuToggle.classList.remove('open');
+  menuToggle.setAttribute('aria-expanded','false');
+  menuPanel.classList.remove('open');
+  menuSections.forEach(sec => sec.classList.remove('open'));
+}
+menuToggle.addEventListener('click', () => {
+  const isOpen = menuPanel.classList.toggle('open');
+  menuToggle.classList.toggle('open', isOpen);
+  menuToggle.setAttribute('aria-expanded', String(isOpen));
+  if(!isOpen) menuSections.forEach(sec => sec.classList.remove('open'));
+});
+menuSections.forEach(section => {
+  section.querySelector('.menu-section-toggle').addEventListener('click', () => {
+    const wasOpen = section.classList.contains('open');
+    menuSections.forEach(sec => sec.classList.remove('open'));
+    if(!wasOpen) section.classList.add('open');
+  });
+});
+// clicking any actual link/action inside the panel closes the whole thing
+menuPanel.addEventListener('click', e => {
+  if(e.target.closest('a, [data-open-modal]')) closeMenuPanel();
+});
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenuPanel(); });
+
+/* ---------------- main render loop ---------------- */
+function frame(){
+  mouseX += (targetMouseX - mouseX) * 0.06;
+  mouseY += (targetMouseY - mouseY) * 0.06;
+
+  /* particles */
+  const heroProgress = clamp(scrollY / window.innerHeight, 0, 1);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(const p of particles){
+    p.y -= p.vy;
+    if(p.y < -10){ p.y = canvas.height + 10; p.x = Math.random()*canvas.width; }
+    const px = p.x + mouseX*70*p.z + scrollY*0.015*p.z;
+    const py = p.y + mouseY*70*p.z - scrollY*0.12*p.z;
+    const alpha = (1 - heroProgress*0.85) * (0.2 + p.z*0.5);
+    if(alpha <= 0.01) continue;
+    ctx.beginPath();
+    ctx.arc(px, py, p.r*p.z, 0, Math.PI*2);
+    ctx.fillStyle = p.accent ? `rgba(168,121,255,${alpha})` : `rgba(255,255,255,${alpha*0.7})`;
+    ctx.fill();
+  }
+
+  /* hero parallax */
+  const rotX = mouseY * -8;
+  const rotY = mouseX * 8;
+  heroInner.style.transform = `perspective(1100px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${-heroProgress*180}px) scale(${1 - heroProgress*0.25})`;
+  heroInner.style.opacity = 1 - heroProgress;
+  heroEl.style.pointerEvents = heroProgress > 0.95 ? 'none' : 'auto';
+
+  /* topbar visibility */
+  if(scrollY > window.innerHeight*0.82){ topbar.classList.add('visible'); }
+  else { topbar.classList.remove('visible'); }
+
+  /* swirl draw */
+  if(swirlLen){
+    const r = swirlSection.getBoundingClientRect();
+    const prog = clamp((window.innerHeight - r.top) / (r.height + window.innerHeight), 0, 1);
+    swirlPath.style.strokeDashoffset = swirlLen * (1 - prog);
+  }
+
+  /* project stacks */
+  for(const wrap of stackWrappers){
+    const r = wrap.getBoundingClientRect();
+    const scrollable = r.height - window.innerHeight;
+    const prog = scrollable > 0 ? clamp(-r.top / scrollable, 0, 1) : 0;
+    const cards = wrap.querySelectorAll('.project-card');
+    const n = cards.length;
+    // which card index is "current" — rounds to nearest whole number
+    const activeIndex = Math.round(prog * (n - 1));
+    cards.forEach((card, i) => {
+      // Cards below active: stacked behind (lower z), fully hidden
+      // Active card: on top, fully visible
+      // Cards above active: hidden, waiting their turn
+      const isActive = i === activeIndex;
+      const isPast   = i < activeIndex;
+      card.style.opacity  = isActive ? '1' : '0';
+      card.style.zIndex   = isActive ? n + 1 : isPast ? i : i;
+      card.style.transform = isActive
+        ? 'translate(-50%,-50%) scale(1)'
+        : i > activeIndex
+          ? 'translate(-50%,-50%) translateY(60px) scale(0.96)'
+          : 'translate(-50%,-50%) translateY(-30px) scale(0.96)';
+      card.style.pointerEvents = isActive ? 'auto' : 'none';
+    });
+  }
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* occasional organic flicker burst on the logo, layered on top of the CSS pulse */
+const heroLogo = document.getElementById('hero-logo');
+function scheduleBurst(){
+  const delay = 2200 + Math.random()*4500;
+  setTimeout(() => {
+    heroLogo.classList.add('burst');
+    setTimeout(() => heroLogo.classList.remove('burst'), 90 + Math.random()*120);
+    scheduleBurst();
+  }, delay);
+}
+scheduleBurst();
+
+/* ---------------- services circle highlight ---------------- */
+const serviceItems = document.querySelectorAll('.service-item');
+const serviceObserver = new IntersectionObserver(entries => {
+  entries.forEach(en => en.target.classList.toggle('active', en.isIntersecting));
+}, { threshold:0.6 });
+serviceItems.forEach(item => serviceObserver.observe(item));
+
+
+/* ---------------- showcase intro text reveal ---------------- */
+const introBlocks = document.querySelectorAll('.showcase-intro');
+const introObserver = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if(en.isIntersecting) en.target.classList.add('in-view');
+  });
+}, { threshold:0.5 });
+introBlocks.forEach(el => introObserver.observe(el));
+
+/* ---------------- project overlay ---------------- */
+const projectOverlay = document.getElementById('project-overlay');
+document.addEventListener('click', e => {
+  const trigger = e.target.closest('[data-open-project]');
+  if(!trigger) return;
+  const sid = trigger.dataset.sid;
+  const idx = parseInt(trigger.dataset.index, 10);
+  const service = SERVICES.find(s => s.id === sid);
+  if(!service) return;
+  const p = service.projects[idx];
+  if(!p) return;
+
+  document.getElementById('po-service').textContent = service.label;
+  document.getElementById('po-title').textContent = p.name;
+  document.getElementById('po-owner').textContent = `Built for ${p.owner} — by ${p.developer}`;
+  document.getElementById('po-desc').textContent = p.desc;
+  document.getElementById('po-tags').innerHTML = (p.tags||[]).map(t=>`<span>${t}</span>`).join('');
+  const link = document.getElementById('po-link');
+  link.href = p.url || '#';
+  link.style.display = (p.url && p.url !== '#') ? '' : 'none';
+  document.getElementById('po-contact').onclick = () => {
+    closeProjectOverlay();
+    openModal('project-developer', service.label, p.name, p.developer);
+  };
+
+  projectOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+});
+
+function closeProjectOverlay(){
+  projectOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('project-overlay-back').addEventListener('click', closeProjectOverlay);
+
+/* ---------------- modal ---------------- */
+const overlay = document.getElementById('modal-overlay');
+const form = document.getElementById('contact-form');
+const modalSub = document.getElementById('modal-sub');
+const contextField = document.getElementById('modal-context-field');
+const contextEl = document.getElementById('modal-context');
+const targetField = document.getElementById('modal-target-field');
+const targetSelect = document.getElementById('m-target');
+const serviceField = document.getElementById('m-service');
+const projectField = document.getElementById('m-project');
+const developerField = document.getElementById('m-developer');
+const statusEl = document.getElementById('modal-status');
+const submitBtn = document.getElementById('modal-submit');
+
+function openModal(target, service, project, developer){
+  serviceField.value = service || '';
+  projectField.value = project || '';
+  statusEl.textContent = '';
+
+  if(target === 'project-developer'){
+    // Contacting the developer of one specific showcased project — no picker needed.
+    developerField.value = developer || '';
+    modalSub.textContent = `Send a message about ${project}.`;
+    contextEl.innerHTML = `<strong>${developer || 'Project developer'}</strong> — developer of ${project}`;
+    contextField.style.display = '';
+    targetField.style.display = 'none';
+  } else {
+    // General contact — let the person choose who they mean to reach.
+    developerField.value = '';
+    targetSelect.value = target || 'developer';
+    modalSub.textContent = "Tell us a bit about what you need.";
+    contextField.style.display = 'none';
+    targetField.style.display = '';
+  }
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('click', e => {
+  const trigger = e.target.closest('[data-open-modal]');
+  if(trigger){
+    openModal(trigger.dataset.target, trigger.dataset.service, trigger.dataset.project, trigger.dataset.developer);
+  }
+});
+document.getElementById('modal-close').addEventListener('click', closeModal);
+overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending…';
+  statusEl.textContent = '';
+
+  const isProjectMode = contextField.style.display !== 'none';
+  const payload = {
+    contactTarget: isProjectMode ? 'project-developer' : targetSelect.value,
+    developer: developerField.value,
+    name: document.getElementById('m-name').value,
+    email: document.getElementById('m-email').value,
+    message: document.getElementById('m-message').value,
+    service: serviceField.value,
+    project: projectField.value,
+    timestamp: new Date().toISOString()
+  };
+
+  try{
+    if(APPS_SCRIPT_URL.includes('PASTE_YOUR')){
+      throw new Error('not configured');
+    }
+    await fetch(APPS_SCRIPT_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'text/plain;charset=utf-8' }, // avoids CORS preflight on Apps Script
+      body: JSON.stringify(payload)
+    });
+    statusEl.textContent = 'Message sent. We will get back to you soon.';
+    form.reset();
+    setTimeout(closeModal, 1700);
+  }catch(err){
+    statusEl.textContent = 'Could not send right now — please try again, or set up the Apps Script URL (see apps-script.gs).';
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send';
+  }
+});
+
+/* =========================================================
+   ROUTING: one file, two "rooms".
+   Visiting yoursite.com/#admin shows the admin room instead
+   of the main site. Like a hidden door at the back of the shop.
+========================================================= */
+const siteRoot = document.getElementById('site-root');
+const adminPage = document.getElementById('admin-page');
+
+function applyRoute(){
+  if(window.location.hash === '#admin'){
+    siteRoot.style.display = 'none';
+    adminPage.style.display = 'block';
+    document.body.style.overflow = 'auto';
+  }else{
+    siteRoot.style.display = '';
+    adminPage.style.display = 'none';
+  }
+}
+window.addEventListener('hashchange', applyRoute);
+applyRoute();
+
+/* ---------------- admin panel logic ---------------- */
+let adminSavedPassword = "";
+const adminLoginScreen = document.getElementById('admin-login-screen');
+const adminContentScreen = document.getElementById('admin-content-screen');
+const adminPasswordInput = document.getElementById('admin-password-input');
+const adminLoginBtn = document.getElementById('admin-login-btn');
+const adminLoginErr = document.getElementById('admin-login-err');
+const adminTableHolder = document.getElementById('admin-table-holder');
+const adminRefreshBtn = document.getElementById('admin-refresh-btn');
+
+adminLoginBtn.addEventListener('click', attemptAdminLogin);
+adminPasswordInput.addEventListener('keydown', e => { if(e.key === 'Enter') attemptAdminLogin(); });
+adminRefreshBtn.addEventListener('click', () => loadAdminData(adminSavedPassword));
+
+async function attemptAdminLogin(){
+  const pw = adminPasswordInput.value.trim();
+  if(!pw) return;
+  adminLoginErr.textContent = '';
+  adminLoginBtn.textContent = 'Checking…';
+  const ok = await loadAdminData(pw);
+  adminLoginBtn.textContent = 'Enter';
+  if(ok){
+    adminSavedPassword = pw;
+    adminLoginScreen.style.display = 'none';
+    adminContentScreen.style.display = 'block';
+  }else{
+    adminLoginErr.textContent = 'Wrong password, or APPS_SCRIPT_URL not set yet.';
+  }
+}
+
+async function loadAdminData(pw){
+  if(APPS_SCRIPT_URL.includes('PASTE_YOUR')){
+    adminTableHolder.innerHTML = '<p class="empty">Set APPS_SCRIPT_URL near the top of this file first.</p>';
+    return false;
+  }
+  try{
+    const res = await fetch(`${APPS_SCRIPT_URL}?password=${encodeURIComponent(pw)}`);
+    const data = await res.json();
+    if(!data.ok) return false;
+    renderAdminRows(data.rows || []);
+    return true;
+  }catch(err){
+    return false;
+  }
+}
+
+function renderAdminRows(rows){
+  if(!rows.length){
+    adminTableHolder.innerHTML = '<p class="empty">No submissions yet.</p>';
+    return;
+  }
+  const rowsHTML = rows.map(r => `
+    <tr>
+      <td>${formatAdminDate(r.timestamp)}</td>
+      <td><span class="pill">${escapeAdminHTML(r.contactTarget)}</span></td>
+      <td>${escapeAdminHTML(r.developer)}</td>
+      <td>${escapeAdminHTML(r.name)}</td>
+      <td>${escapeAdminHTML(r.email)}</td>
+      <td class="msg">${escapeAdminHTML(r.message)}</td>
+      <td>${escapeAdminHTML(r.service)}</td>
+      <td>${escapeAdminHTML(r.project)}</td>
+    </tr>
+  `).join('');
+  adminTableHolder.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>When</th><th>To</th><th>Developer</th><th>Name</th><th>Email</th><th>Message</th><th>Service</th><th>Project</th>
+      </tr></thead>
+      <tbody>${rowsHTML}</tbody>
+    </table>
+  `;
+}
+
+function formatAdminDate(v){
+  try{ return new Date(v).toLocaleString(); }catch(e){ return v; }
+}
+function escapeAdminHTML(s){
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>
