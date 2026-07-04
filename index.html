@@ -434,18 +434,19 @@
     margin-top:22px;
   }
   .project-nav-btn{
-    border:1px solid var(--accent);
-    background:transparent;
+    display:inline-flex;align-items:center;justify-content:center;
+    width:54px;height:54px;
+    border:2px solid var(--accent);
+    background:rgba(0,0,0,0.72);
     color:var(--accent);
-    padding:10px 16px;
-    border-radius:999px;
-    font-size:12px;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
+    border-radius:50%;
+    font-size:22px;
+    line-height:1;
     cursor:pointer;
-    transition:background .2s ease,color .2s ease,transform .2s ease;
+    box-shadow:0 0 24px rgba(200,146,42,0.25);
+    transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease;
   }
-  .project-nav-btn:hover{background:var(--accent);color:#000;transform:translateY(-2px);}
+  .project-nav-btn:hover{background:var(--accent);color:#000;transform:translateY(-2px);box-shadow:0 0 32px rgba(200,146,42,0.38);}
   .project-image{
     width:100%;
     aspect-ratio:16/10;
@@ -1122,7 +1123,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
       </div>
     </article>
   `).join('');
-  const nextLabel = s.projects.length > 1 ? 'Next showcase ↓' : 'Next section ↓';
+  const nextArrow = s.projects.length > 1 ? '↓' : '↓';
   return `
     <div class="showcase-section" data-showcase-section="${s.id}">
       <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
@@ -1132,7 +1133,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
         <div class="stack-sticky">
           ${cardsHTML}
           <div class="project-nav">
-            <button class="project-nav-btn" type="button" data-nav-next data-sid="${s.id}">${nextLabel}</button>
+            <button class="project-nav-btn" type="button" data-nav-next data-sid="${s.id}" aria-label="Next showcase">${nextArrow}</button>
           </div>
         </div>
       </div>
@@ -1464,62 +1465,99 @@ document.addEventListener('click', e => {
   document.body.style.overflow = 'hidden';
 });
 
-let activeShowcaseSection = null;
-function setShowcaseMode(section, enabled){
+const showcaseSections = Array.from(document.querySelectorAll('.showcase-section'));
+let lockedShowcaseSection = null;
+let lockedShowcaseReason = null;
+
+function getShowcaseCards(section){
+  return Array.from(section.querySelectorAll('.project-card'));
+}
+function getActiveShowcaseIndex(section){
+  return getShowcaseCards(section).findIndex(card => card.classList.contains('active'));
+}
+function isShowcaseComplete(section){
+  const cards = getShowcaseCards(section);
+  return cards.length === 0 || getActiveShowcaseIndex(section) >= cards.length - 1;
+}
+function setShowcaseLock(section, reason='scroll'){
   if(!section) return;
-  section.classList.toggle('active-showcase', enabled);
-  if(enabled){
-    activeShowcaseSection = section;
-    document.body.style.overflow = 'hidden';
-  } else if(activeShowcaseSection === section){
-    activeShowcaseSection = null;
-    document.body.style.overflow = '';
-  }
+  lockedShowcaseSection = section;
+  lockedShowcaseReason = reason;
+}
+function clearShowcaseLock(section){
+  if(!section || lockedShowcaseSection !== section) return;
+  lockedShowcaseSection = null;
+  lockedShowcaseReason = null;
 }
 
+const showcaseObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const section = entry.target;
+    if(!entry.isIntersecting) return;
+    const reason = section.dataset.enterFrom === 'button' ? 'button' : 'scroll';
+    if(isShowcaseComplete(section)){
+      clearShowcaseLock(section);
+    } else {
+      setShowcaseLock(section, reason);
+    }
+  });
+}, { threshold:0.35, rootMargin:'-10% 0px -30% 0px' });
+showcaseSections.forEach(section => showcaseObserver.observe(section));
+
 document.addEventListener('click', e => {
+  const anchor = e.target.closest('a[href^="#showcase-"]');
+  if(anchor){
+    const sectionId = anchor.getAttribute('href').slice(1);
+    const section = document.getElementById(sectionId)?.closest('.showcase-section');
+    if(section){ section.dataset.enterFrom = 'button'; setShowcaseLock(section, 'button'); }
+  }
+
   const button = e.target.closest('[data-nav-next]');
   if(!button) return;
   const section = button.closest('.showcase-section');
   if(!section) return;
-  const cards = Array.from(section.querySelectorAll('.project-card'));
-  const currentIndex = cards.findIndex(card => card.classList.contains('active'));
+  const cards = getShowcaseCards(section);
+  const currentIndex = getActiveShowcaseIndex(section);
   let nextIndex = currentIndex + 1;
   if(nextIndex >= cards.length){
     const nextSection = section.nextElementSibling?.closest('.showcase-section');
     if(nextSection){
-      setShowcaseMode(section, false);
-      setShowcaseMode(nextSection, true);
       nextSection.scrollIntoView({behavior:'smooth', block:'start'});
-      const nextCards = Array.from(nextSection.querySelectorAll('.project-card'));
+      const nextCards = getShowcaseCards(nextSection);
       nextCards.forEach((card, i) => card.classList.toggle('active', i === 0));
-      const nextButton = nextSection.querySelector('[data-nav-next]');
-      if(nextButton) nextButton.textContent = 'Next showcase ↓';
+      nextSection.dataset.enterFrom = 'scroll';
+      if(nextCards.length > 1){
+        setShowcaseLock(nextSection, 'scroll');
+      } else {
+        clearShowcaseLock(nextSection);
+      }
       return;
     }
     nextIndex = cards.length - 1;
   }
   cards.forEach((card, i) => card.classList.toggle('active', i === nextIndex));
-  const nextLabel = nextIndex + 1 >= cards.length ? 'Next section ↓' : 'Next showcase ↓';
-  button.textContent = nextLabel;
-  setShowcaseMode(section, true);
+  if(nextIndex >= cards.length - 1){
+    clearShowcaseLock(section);
+  } else {
+    setShowcaseLock(section, 'scroll');
+  }
 });
 
 document.addEventListener('wheel', e => {
-  if(activeShowcaseSection){
+  if(lockedShowcaseSection){
     e.preventDefault();
     e.stopPropagation();
   }
 }, {passive:false});
 
 document.addEventListener('touchmove', e => {
-  if(activeShowcaseSection){
+  if(lockedShowcaseSection){
     e.preventDefault();
   }
 }, {passive:false});
 
 document.addEventListener('keydown', e => {
-  if(activeShowcaseSection && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp' || e.key === ' ')) {
+  if(lockedShowcaseSection && ['ArrowDown','ArrowUp','PageDown','PageUp',' '].includes(e.key)){
     e.preventDefault();
   }
 });
