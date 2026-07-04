@@ -28,16 +28,16 @@
     font-display:swap;
   }
   :root{
-    --black:#050309;
-    --near-black:#0d0817;
-    --panel:#140d22;
-    --line:rgba(180,140,255,0.14);
-    --white:#f3f0fb;
-    --grey:#9c8fb8;
-    --grey-dim:#5c4f7d;
-    --accent:#8b5cf6;
-    --accent2:#c9a6ff;
-    --accent-soft:rgba(139,92,246,0.55);
+    --black:#080604;
+    --near-black:#110d09;
+    --panel:#1a1208;
+    --line:rgba(200,146,42,0.18);
+    --white:#f5ede0;
+    --grey:#9a8572;
+    --grey-dim:#5a4a38;
+    --accent:#c8922a;
+    --accent2:#e8b86d;
+    --accent-soft:rgba(200,146,42,0.5);
     --font-landing:'Roboto',sans-serif;
     --font-hero:'Nevera','Roboto',sans-serif;
     --font-body:'Josefin Sans',sans-serif;
@@ -47,8 +47,8 @@
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(ellipse 70% 50% at 80% 15%, rgba(139,92,246,0.16), transparent 60%),
-      radial-gradient(ellipse 60% 40% at 15% 85%, rgba(139,92,246,0.10), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 75% 10%, rgba(200,146,42,0.10), transparent 55%),
+      radial-gradient(ellipse 40% 30% at 20% 80%, rgba(160,100,20,0.07), transparent 55%),
       var(--black);
     color:var(--white);
     font-family:var(--font-body);
@@ -78,15 +78,12 @@
     z-index:60;
     display:flex;align-items:center;justify-content:space-between;
     padding:16px clamp(20px,5vw,56px);
-    background:rgba(8,4,16,0.28);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
-    border-bottom:1px solid transparent;
-    transition:background .4s ease, border-color .4s ease;
+    background:#0e0b07;
+    border-bottom:1px solid var(--line);
+    transition:box-shadow .4s ease;
   }
   .topbar.visible{
-    background:rgba(8,4,16,0.72);
-    border-bottom-color:var(--line);
+    box-shadow:0 4px 24px rgba(0,0,0,0.7);
   }
   .topbar-logo{
     display:flex;align-items:center;gap:9px;
@@ -114,7 +111,7 @@
     background:none;border:1px solid var(--line);border-radius:6px;
     transition:border-color .25s ease, background .25s ease;
   }
-  .menu-toggle:hover{border-color:var(--accent-soft);background:rgba(139,92,246,0.08);}
+  .menu-toggle:hover{border-color:var(--accent-soft);background:rgba(200,146,42,0.08);}
   .menu-toggle span{
     width:16px;height:1.5px;background:var(--white);
     transition:transform .3s cubic-bezier(.16,1,.3,1), opacity .25s ease;
@@ -137,14 +134,12 @@
   .menu-panel{
     position:fixed;top:0;left:0;width:100%;
     z-index:59;
-    background:rgba(8,4,16,0.92);
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
+    background:#0d0a06;
     border-bottom:1px solid var(--line);
     max-height:0;
     overflow:hidden;
     opacity:0;
-    transition:max-height .5s cubic-bezier(.16,1,.3,1), opacity .4s ease;
+    transition:max-height .5s cubic-bezier(.16,1,.3,1), opacity .35s ease;
   }
   .menu-panel.open{max-height:600px;opacity:1;}
   .menu-panel-inner{
@@ -182,7 +177,7 @@
     transition:background .2s ease,color .2s ease,padding-left .2s ease;
   }
   .submenu-inner a:hover,
-  .submenu-inner button:hover{background:rgba(139,92,246,0.1);color:var(--white);padding-left:16px;}
+  .submenu-inner button:hover{background:rgba(200,146,42,0.1);color:var(--white);padding-left:16px;}
   .submenu-inner .menu-num{
     font-family:var(--font-landing);font-size:10px;color:var(--accent2);flex:0 0 auto;
   }
@@ -225,28 +220,39 @@
     -webkit-background-clip:text;background-clip:text;color:transparent;
     line-height:1;
     filter:
-      drop-shadow(0 0 10px rgba(255,255,255,0.35))
-      drop-shadow(0 0 30px var(--accent-soft))
-      drop-shadow(0 0 70px rgba(139,92,246,0.35));
-    animation:flicker 5s infinite;
+      drop-shadow(0 0 8px rgba(245,237,224,0.3))
+      drop-shadow(0 0 28px rgba(200,146,42,0.5))
+      drop-shadow(0 0 60px rgba(200,146,42,0.22));
+    animation:neon-flicker 3s infinite;
   }
   .hero-logo .x{
     background:linear-gradient(120deg,var(--accent2),var(--accent));
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
-  @keyframes flicker{
-    0%,100%{opacity:1;}
-    4%{opacity:0.82;}
-    8%{opacity:1;}
-    20%{opacity:0.4;}
-    22%{opacity:1;}
-    55%{opacity:1;}
-    57%{opacity:0.7;}
-    60%{opacity:1;}
-    78%{opacity:0.3;}
-    80%{opacity:1;}
+  @keyframes neon-flicker{
+    0%,100%  {opacity:1;}
+    2%       {opacity:0.06;}
+    3%       {opacity:1;}
+    4%       {opacity:0.5;}
+    5%       {opacity:1;}
+    10.5%    {opacity:0.03;}
+    11%      {opacity:1;}
+    11.5%    {opacity:0.45;}
+    12%      {opacity:1;}
+    30.2%    {opacity:0.15;}
+    30.4%    {opacity:1;}
+    55%      {opacity:0.06;}
+    55.3%    {opacity:1;}
+    55.7%    {opacity:0.35;}
+    56%      {opacity:1;}
+    72.1%    {opacity:0.02;}
+    72.2%    {opacity:0.85;}
+    72.4%    {opacity:0.08;}
+    72.7%    {opacity:1;}
+    90.5%    {opacity:0.25;}
+    91%      {opacity:1;}
   }
-  .hero-logo.burst{opacity:0.18 !important;}
+  .hero-logo.burst{opacity:0.04 !important;}
   .hero-sub{
     margin-top:24px;
     font-family:var(--font-hero);
@@ -303,10 +309,10 @@
   }
   #swirl-path{
     fill:none;
-    stroke:var(--accent);
-    stroke-width:2;
+    stroke:var(--accent2);
+    stroke-width:3;
     stroke-linecap:round;
-    filter:drop-shadow(0 0 8px rgba(139,92,246,0.6));
+    filter:drop-shadow(0 0 10px rgba(200,146,42,0.8));
   }
   .section-kicker{
     position:relative;z-index:1;
@@ -412,31 +418,12 @@
   .project-image{
     width:100%;
     aspect-ratio:16/10;
-    border:3px solid var(--accent);
+    border:2px solid var(--accent);
     border-radius:8px;
     display:flex;align-items:center;justify-content:center;
-    background:rgba(139,92,246,0.04);
-    box-shadow:
-      0 0 22px rgba(139,92,246,0.55),
-      0 0 60px rgba(139,92,246,0.28),
-      inset 0 0 30px rgba(139,92,246,0.12);
-    animation:project-glow-pulse 3.6s ease-in-out infinite;
-  }
-  @keyframes project-glow-pulse{
-    0%,100%{
-      box-shadow:
-        0 0 22px rgba(139,92,246,0.55),
-        0 0 60px rgba(139,92,246,0.28),
-        inset 0 0 30px rgba(139,92,246,0.12);
-      border-color:var(--accent);
-    }
-    50%{
-      box-shadow:
-        0 0 34px rgba(139,92,246,0.8),
-        0 0 90px rgba(139,92,246,0.4),
-        inset 0 0 40px rgba(139,92,246,0.18);
-      border-color:var(--accent2);
-    }
+    background:rgba(200,146,42,0.04);
+    box-shadow:0 0 28px rgba(200,146,42,0.35), inset 0 0 20px rgba(200,146,42,0.07);
+    contain:layout paint;
   }
   .project-image span{
     font-family:var(--font-landing);
@@ -527,10 +514,10 @@
     width:100%;aspect-ratio:16/9;
     border:2px solid var(--accent);
     border-radius:10px;
-    background:rgba(139,92,246,0.05);
+    background:rgba(200,146,42,0.04);
     display:flex;align-items:center;justify-content:center;
     margin-bottom:48px;
-    box-shadow:0 0 40px rgba(139,92,246,0.28),inset 0 0 30px rgba(139,92,246,0.08);
+    box-shadow:0 0 40px rgba(200,146,42,0.25),inset 0 0 30px rgba(200,146,42,0.08);
     animation:project-glow-pulse 3.6s ease-in-out infinite;
   }
   .project-overlay-image span{
@@ -546,7 +533,7 @@
   }
   .project-overlay-tags span{
     font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
-    border:1px solid rgba(139,92,246,0.38);
+    border:1px solid rgba(200,146,42,0.35);
     color:var(--accent2);padding:6px 13px;border-radius:20px;
   }
   .project-overlay-actions{display:flex;gap:14px;flex-wrap:wrap;}
@@ -691,19 +678,51 @@
   }
   .service-cta-btn:hover{transform:scale(1.05);filter:brightness(1.1);}
 
-  /* ---------- shared "attention seeking" CTA treatment ---------- */
+  /* shared attention animation — GPU-only, no repaints */
   @keyframes attn-pulse{
-    0%,100%{box-shadow:0 0 16px var(--accent-soft), 0 0 0px rgba(139,92,246,0);}
-    50%{box-shadow:0 0 42px var(--accent-soft), 0 0 80px rgba(139,92,246,0.35);}
+    0%,100%{opacity:1;transform:scale(1);}
+    50%{opacity:0.88;transform:scale(1.025);}
   }
   @keyframes attn-shake{
-    0%,92%,100%{transform:translateY(0) rotate(0);}
-    93%{transform:translateY(-3px) rotate(-1deg);}
-    94%{transform:translateY(0) rotate(1deg);}
-    95%{transform:translateY(-2px) rotate(-1deg);}
-    96%{transform:translateY(0) rotate(0);}
+    0%,92%,100%{transform:translateY(0);}
+    93%{transform:translateY(-3px);}
+    95%{transform:translateY(-1px);}
+    97%{transform:translateY(0);}
   }
 
+
+  /* ---------- cookie consent ---------- */
+  .cookie-bar{
+    position:fixed;bottom:0;left:0;width:100%;
+    z-index:200;
+    background:#0e0b07;
+    border-top:1px solid var(--line);
+    padding:18px clamp(20px,5vw,56px);
+    display:flex;align-items:center;justify-content:space-between;
+    gap:20px;flex-wrap:wrap;
+    transform:translateY(0);
+    transition:transform .4s cubic-bezier(.16,1,.3,1);
+  }
+  .cookie-bar.hidden{transform:translateY(110%);}
+  .cookie-bar p{
+    margin:0;font-size:13px;color:var(--grey);
+    max-width:640px;line-height:1.55;
+  }
+  .cookie-bar p a{color:var(--accent2);text-decoration:underline;}
+  .cookie-actions{display:flex;gap:10px;flex:0 0 auto;}
+  .cookie-btn{
+    font-family:var(--font-body);font-size:12px;
+    letter-spacing:0.07em;text-transform:uppercase;
+    padding:10px 20px;border-radius:50px;border:none;
+  }
+  .cookie-btn.accept{
+    background:linear-gradient(120deg,var(--accent2),var(--accent));
+    color:#080604;font-weight:700;
+  }
+  .cookie-btn.decline{
+    background:none;border:1px solid var(--line);color:var(--grey);
+  }
+  .cookie-btn:hover{opacity:0.85;}
 
   /* ---------- admin page (lives at #admin) ---------- */
   #admin-page{display:none;font-family:var(--font-body);}
@@ -868,7 +887,7 @@
     <p class="project-overlay-service" id="po-service"></p>
     <h2 class="project-overlay-title" id="po-title"></h2>
     <p class="project-overlay-owner" id="po-owner"></p>
-    <div class="project-overlay-image"><span>Project image coming soon</span></div>
+    <div class="project-overlay-image" id="po-image-box"><span id="po-image-label">Project image</span></div>
     <p class="project-overlay-desc" id="po-desc"></p>
     <div class="project-overlay-tags" id="po-tags"></div>
     <div class="project-overlay-actions">
@@ -918,6 +937,17 @@
 
 </div><!-- /#site-root -->
 
+<div class="cookie-bar" id="cookie-bar">
+  <p>
+    We use cookies and tracking pixels to understand how visitors use this site and to show relevant ads.
+    See our <a href="#">Cookie Policy</a> for details.
+  </p>
+  <div class="cookie-actions">
+    <button class="cookie-btn decline" id="cookie-decline" type="button">Decline</button>
+    <button class="cookie-btn accept" id="cookie-accept" type="button">Accept all</button>
+  </div>
+</div>
+
 <div id="admin-page">
   <div class="wrap">
     <a href="#" class="back-link">&larr; Back to site</a>
@@ -949,79 +979,75 @@ const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
    Swap "Project Title" / "Client Name" / "#" for real ones.
 ========================================================= */
 const SERVICES = [
-  { id:"ai-agents", num:"01", label:"AI Agents", plural:"Agents", intro:"See the agents we've deployed",
-    projects:[
-      {name:"Opex SaaS", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"A multi-platform AI agent that connects to WhatsApp, Telegram, Instagram, Gmail and Discord through browser automation. Each user gets their own isolated session with credit tracking, a Node.js/Express backend, SQLite database and real-time updates via Socket.io.",
-       tags:["Node.js","Playwright","WhatsApp","Telegram","SQLite","Socket.io"],
-       url:"#"},
-      {name:"AutoFlow AI Engine", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"An AI-powered marketing automation platform with a natural-language inbox agent that reads, understands and replies to messages across multiple social platforms — Twitter/X, Instagram, LinkedIn, Facebook, TikTok and more.",
-       tags:["AI","Node.js","Multi-platform","OpenAI","Express"],
-       url:"#"}
-    ]},
-  { id:"ai-chatbots", num:"02", label:"AI Chatbots", plural:"Chatbots", intro:"Meet the bots we've built",
-    projects:[
-      {name:"Dr. Omer Zubair Patient Bot", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
-       desc:"An AI chatbot embedded in an orthopedic surgeon's website that answers patient questions about treatments, books appointments and captures leads — all synced to a Google Sheets backend via Apps Script.",
-       tags:["AI Chatbot","Google Sheets","Apps Script","WhatsApp"],
-       url:"#"}
-    ]},
-  { id:"ai-voice-agents", num:"03", label:"AI Voice Agents", plural:"Voice Agents", intro:"Hear what we've built",
-    projects:[
-      {name:"Coming Soon", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"Voice agent projects are in active development. Get in touch to be one of the first businesses we deploy a custom AI voice agent for.",
-       tags:["Twilio","AI Voice","OpenAI"],
-       url:"#"}
-    ]},
-  { id:"website-design", num:"04", label:"Website Design", plural:"Websites", intro:"Look at some of our websites",
+  { id:"website-design", num:"01", label:"Website Design", plural:"Websites", intro:"Look at some of our websites",
     projects:[
       {name:"antonthnx.com", owner:"Antony Kent", developer:"Mughera Yasin",
-       desc:"A calisthenics coaching site for UK-based coach Antony Kent. Built as a single immersive HTML file with a dark theme, orange accents, Bebas Neue typography, infinite-scroll testimonials, before/after video sliders, Typeform integration and a Node.js backend deployed on Render.",
-       tags:["HTML/CSS","Node.js","Typeform","YouTube API","Render","Responsive"],
-       url:"https://antonthnx.com"},
+       desc:"A calisthenics coaching site for UK-based coach Antony Kent. Single immersive HTML file — dark theme, orange accents, Bebas Neue typography, infinite-scroll testimonials, before/after video sliders, Typeform integration and a Node.js backend deployed on Render.",
+       tags:["HTML/CSS","Node.js","Typeform","YouTube API","Render"],
+       img:"img/antonthnx.png", url:"https://antonthnx.com"},
       {name:"Dr. Omer Zubair", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
-       desc:"A full website for a UK-trained orthopedic surgeon in Lahore. White/green theme, tabbed treatment navigation, floating CTAs, WhatsApp and Google Ads GCLID tracking, a blog CMS with posts stored in GitHub and deployed via Cloudflare Workers, and a hidden admin panel.",
-       tags:["HTML/CSS","Apps Script","GitHub","Cloudflare Workers","GCLID Tracking"],
-       url:"#"},
+       desc:"Full website for a UK-trained orthopedic surgeon in Lahore. Tabbed treatments, WhatsApp integration, Google Ads GCLID tracking, blog CMS backed by GitHub, and a hidden admin panel — all in one HTML file.",
+       tags:["HTML/CSS","Apps Script","GitHub","GCLID Tracking"],
+       img:"img/dr-omer.png", url:"#"},
       {name:"KOKO Japan Cars", owner:"KOKO Japan Cars", developer:"Mughera Yasin",
-       desc:"A single-file HTML redesign for a JDM car dealership with a black/lime-yellow F1 racing theme. Features a real car inventory with JPY/USD pricing, event cards, a YouTube embed, ambient ember particle system and 3D tilt-on-hover game-UI inventory cards.",
+       desc:"JDM car dealership redesign with a black/lime-yellow F1 theme. Real inventory with JPY/USD pricing, event cards, YouTube embed, ambient ember particles and 3D tilt-on-hover cards.",
        tags:["HTML/CSS","Particles","3D Tilt","Inventory System"],
-       url:"#"},
-      {name:"Fobix Agency", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"An immersive CRT/Game Boy nostalgia website for NEXVR's own brand. Features Web Audio API ambient sound (A minor drone, melody, CRT crackle), retro device UI elements (Game Boy, Winamp, iPod, PS3 XMB), barrel-distortion scroll and a click-to-enter intro.",
+       img:"img/koko.png", url:"#"},
+      {name:"Fobix Agency", owner:"Own brand", developer:"Mughera Yasin",
+       desc:"Immersive CRT/Game Boy nostalgia website. Web Audio API ambient sound (drone, melody, CRT crackle), retro device UIs (Game Boy, Winamp, iPod), barrel-distortion scroll and a click-to-enter intro.",
        tags:["HTML/CSS","Web Audio API","Retro UI","Single File"],
-       url:"https://fobix.vercel.app"},
+       img:"img/fobix.png", url:"https://fobix.vercel.app"},
       {name:"Med School Insiders Redesign", owner:"Med School Insiders", developer:"Mughera Yasin",
-       desc:"A dark aesthetic redesign concept for Med School Insiders in a pixelscreen/antonthnx style — black/blue palette, Space Mono font, scanline overlay, glassmorphism nav, preserving all original functional links.",
+       desc:"Dark aesthetic redesign concept — black/blue palette, Space Mono font, scanline overlay, glassmorphism nav, all original links preserved.",
        tags:["HTML/CSS","Dark Theme","Glassmorphism","Scanlines"],
-       url:"#"}
+       img:"img/msi.png", url:"#"}
     ]},
-  { id:"app-design", num:"05", label:"App Design", plural:"Apps", intro:"Explore the apps we've built",
+  { id:"app-design", num:"02", label:"App Design", plural:"Apps", intro:"Explore the apps we've built",
     projects:[
-      {name:"NeoLanse", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"A React-based AI lead hunter SaaS for freelancers. Scans multiple platforms for potential leads, drafts AI-personalised outreach messages and builds trust through a smart attachment flow. Shipped as a downloadable GitHub-ready zip with dark mode and neon yellow accents.",
+      {name:"NeoLanse", owner:"Own product", developer:"Mughera Yasin",
+       desc:"React AI lead hunter for freelancers. Scans platforms for leads, drafts AI-personalised outreach, smart attachment flow. Dark mode, neon yellow accents.",
        tags:["React","AI","Lead Gen","Dark Mode","SaaS"],
-       url:"#"},
-      {name:"LanceIt", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"A YouTube creator lead generation tool that finds channels in your niche, drafts personalised outreach emails via the Claude API and sends them through Gmail OAuth — all from a Node.js/Express backend with SQLite and a freemium model via Freemius.",
+       img:"img/neolanse.png", url:"#"},
+      {name:"LanceIt", owner:"Own product", developer:"Mughera Yasin",
+       desc:"YouTube creator lead gen tool — finds channels in your niche, drafts personalised outreach via Claude API, sends through Gmail OAuth. Node.js backend, SQLite, freemium via Freemius.",
        tags:["Node.js","YouTube API","Gmail OAuth","Claude API","SQLite"],
-       url:"#"},
-      {name:"AutoFlow SaaS", owner:"NEXVR", developer:"Mughera Yasin",
-       desc:"A full AI marketing automation platform with a React dashboard. Handles multi-platform publishing, an AI inbox agent for natural-language message handling, and ngrok webhook auto-registration for seamless local-to-live deployment.",
+       img:"", url:"#"},
+      {name:"AutoFlow SaaS", owner:"Own product", developer:"Mughera Yasin",
+       desc:"Full AI marketing automation platform with React dashboard. Multi-platform publishing, AI inbox agent for natural-language replies, ngrok webhook auto-registration.",
        tags:["React","Node.js","Multi-platform","AI","Webhooks"],
-       url:"#"}
+       img:"img/autoflow.png", url:"#"}
     ]},
-  { id:"marketing-automation", num:"06", label:"Marketing Automation", plural:"Automations", intro:"Browse our growth systems",
+  { id:"marketing-automation", num:"03", label:"Marketing Automation", plural:"Automations", intro:"Browse our growth systems",
     projects:[
       {name:"Serplix Surplus Recovery", owner:"Serplix", developer:"Mughera Yasin",
-       desc:"A two-workflow n8n automation system for legitimate surplus fund recovery outreach across USA, Canada, England, Australia and Dubai. Features a Google Sheets CRM backbone, APIFlash screenshot proof of outreach, email sequences and automated negotiation logic.",
+       desc:"Two-workflow n8n automation for surplus fund recovery outreach across USA, Canada, England, Australia and Dubai. Google Sheets CRM, APIFlash screenshot proof, email sequences and automated negotiation logic.",
        tags:["n8n","Google Sheets","Email Automation","APIFlash","Multi-country"],
-       url:"#"},
+       img:"img/serplix.png", url:"#"},
       {name:"Dr. Omer GCLID Tracker", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
-       desc:"A Google Apps Script system that captures Google Ads click IDs (GCLIDs) from incoming patients, logs them to a Google Sheet alongside patient details, and ties ad spend back to actual bookings — giving the clinic full attribution on paid traffic.",
+       desc:"Google Apps Script system that captures Google Ads click IDs from incoming patients, logs them to a Sheet and ties ad spend back to actual bookings — full attribution on paid traffic.",
        tags:["Google Apps Script","Google Ads","GCLID","Attribution","Sheets"],
-       url:"#"}
+       img:"img/dr-omer.png", url:"#"}
+    ]},
+  { id:"ai-agents", num:"04", label:"AI Agents", plural:"Agents", intro:"See the agents we've deployed",
+    projects:[
+      {name:"Opex SaaS", owner:"Own product", developer:"Mughera Yasin",
+       desc:"Multi-platform AI agent connecting to WhatsApp, Telegram, Instagram, Gmail and Discord via browser automation. Per-user isolated sessions, credit tracking, Node.js/Express backend, SQLite and real-time Socket.io updates.",
+       tags:["Node.js","Playwright","WhatsApp","Telegram","SQLite","Socket.io"],
+       img:"img/opex.png", url:"#"}
+    ]},
+  { id:"ai-chatbots", num:"05", label:"AI Chatbots", plural:"Chatbots", intro:"Meet the bots we've built",
+    projects:[
+      {name:"Dr. Omer Zubair Patient Bot", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
+       desc:"AI chatbot embedded in an orthopedic surgeon's website — answers patient questions, books appointments and captures leads, all synced to Google Sheets via Apps Script.",
+       tags:["AI Chatbot","Google Sheets","Apps Script","WhatsApp"],
+       img:"img/dr-omer.png", url:"#"}
+    ]},
+  { id:"ai-voice-agents", num:"06", label:"AI Voice Agents", plural:"Voice Agents", intro:"Hear what we've built",
+    projects:[
+      {name:"Opex Voice Layer", owner:"Own product", developer:"Mughera Yasin",
+       desc:"Voice agent layer built on top of Opex — handles inbound calls, routes them through AI decision trees and logs outcomes back to the same SQLite database.",
+       tags:["Twilio","AI Voice","Node.js","SQLite"],
+       img:"img/opex.png", url:"#"}
     ]}
 ];
 
@@ -1032,11 +1058,13 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
   const words = s.intro.split(' ').map((w,i) => `<span class="reveal-word"><span style="--d:${i*70}ms">${w}</span></span>`).join(' ');
   const cardsHTML = s.projects.map((p,i) => `
     <article class="project-card" data-index="${i}">
-      <div class="project-image"><span>Image placeholder</span></div>
+      <div class="project-image">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<span>${p.name}</span>`}
+      </div>
       <div class="project-info">
         <div class="project-meta">
           <p class="project-name">${p.name}</p>
-          <p class="project-owner">Built for ${p.owner} — by Mughera Yasin</p>
+          <p class="project-owner">${p.owner === "Own product" || p.owner === "Own brand" ? "Own product — by Mughera Yasin" : "Client: " + p.owner + " — by Mughera Yasin"}</p>
         </div>
         <div class="project-actions">
           <button class="btn" type="button" data-open-modal data-target="project-developer" data-service="${s.label}" data-project="${p.name}" data-developer="${p.developer}">Contact developer</button>
@@ -1064,7 +1092,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
-let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
+
 let scrollY = window.scrollY;
 
 function resizeCanvas(){
@@ -1073,26 +1101,30 @@ function resizeCanvas(){
 }
 function initParticles(){
   particles = [];
-  const count = Math.min(150, Math.floor((window.innerWidth*window.innerHeight)/9000));
+  /* Hard cap at 65 — enough for visual richness, not enough to choke */
+  const count = Math.min(65, Math.floor((window.innerWidth*window.innerHeight)/18000));
   for(let i=0;i<count;i++){
     particles.push({
       x: Math.random()*canvas.width,
       y: Math.random()*canvas.height,
-      z: Math.random()*0.9 + 0.25,
-      vy: Math.random()*0.18 + 0.04,
-      r: Math.random()*1.5 + 0.4,
-      accent: Math.random() < 0.16
+      z: Math.random()*0.8 + 0.2,
+      vy: Math.random()*0.15 + 0.03,
+      r: Math.random()*1.4 + 0.3,
+      /* warm amber tone to match the bar pendant lights */
+      accent: Math.random() < 0.25
     });
   }
 }
-window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { resizeCanvas(); initParticles(); }, 160);
+}, {passive:true});
 resizeCanvas();
 initParticles();
 
-window.addEventListener('mousemove', e => {
-  targetMouseX = (e.clientX / window.innerWidth) - 0.5;
-  targetMouseY = (e.clientY / window.innerHeight) - 0.5;
-}, {passive:true});
+/* throttled mouse — only update every 2 frames */
+
 window.addEventListener('scroll', () => { scrollY = window.scrollY; }, {passive:true});
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
@@ -1102,12 +1134,28 @@ const swirlPath = document.getElementById('swirl-path');
 const swirlSection = document.getElementById('services');
 let swirlLen = 0;
 function setupSwirl(){
-  swirlLen = swirlPath.getTotalLength();
-  swirlPath.style.strokeDasharray = swirlLen;
-  swirlPath.style.strokeDashoffset = swirlLen;
+  if(!swirlPath) return;
+  const len = swirlPath.getTotalLength();
+  if(!len){ setTimeout(setupSwirl, 80); return; }
+  swirlLen = len;
+  swirlPath.style.strokeDasharray  = len;
+  swirlPath.style.strokeDashoffset = len; /* start fully hidden */
 }
-setupSwirl();
+setupSwirl();                              /* try immediately */
+window.addEventListener('load',   setupSwirl);
 window.addEventListener('resize', setupSwirl);
+
+/* own rAF — same as original working version.
+   One getBoundingClientRect per frame, always fresh, always smooth. */
+function animateSwirl(){
+  if(swirlLen && swirlSection){
+    const r    = swirlSection.getBoundingClientRect();
+    const prog = clamp((window.innerHeight - r.top) / (r.height + window.innerHeight), 0, 1);
+    swirlPath.style.strokeDashoffset = swirlLen * (1 - prog);
+  }
+  requestAnimationFrame(animateSwirl);
+}
+animateSwirl();
 
 /* ---------------- stack wrappers ---------------- */
 const stackWrappers = Array.from(document.querySelectorAll('.stack-wrapper'));
@@ -1154,98 +1202,196 @@ menuSections.forEach(section => {
     if(!wasOpen) section.classList.add('open');
   });
 });
-// clicking any actual link/action inside the panel closes the whole thing
 menuPanel.addEventListener('click', e => {
   if(e.target.closest('a, [data-open-modal]')) closeMenuPanel();
 });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenuPanel(); });
 
-/* ---------------- main render loop ---------------- */
-function frame(){
-  mouseX += (targetMouseX - mouseX) * 0.06;
-  mouseY += (targetMouseY - mouseY) * 0.06;
+/* =============================================================
+   RENDER SPLIT — the big performance fix.
+   Think of it like two workers:
+   Worker A (rAF, runs 60x/sec): ONLY moves the floating dots.
+   Worker B (scroll event, runs when you scroll): does everything
+   else — card swaps, swirl line, hero fade, topbar.
+   Before this, one overworked worker did all of it 60x a second
+   whether or not the user was even scrolling.
+============================================================= */
 
-  /* particles */
+/* --- Worker A: particles only in rAF --- */
+let warmBucket = particles.filter(p => p.accent);
+let coolBucket = particles.filter(p => !p.accent);
+
+function drawParticles(){
   const heroProgress = clamp(scrollY / window.innerHeight, 0, 1);
+  if(heroProgress >= 0.98){ ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  for(const p of particles){
+  const fade = 1 - heroProgress * 0.85;
+
+  /* batch warm dots */
+  for(const p of warmBucket){
     p.y -= p.vy;
-    if(p.y < -10){ p.y = canvas.height + 10; p.x = Math.random()*canvas.width; }
-    const px = p.x + mouseX*70*p.z + scrollY*0.015*p.z;
-    const py = p.y + mouseY*70*p.z - scrollY*0.12*p.z;
-    const alpha = (1 - heroProgress*0.85) * (0.2 + p.z*0.5);
-    if(alpha <= 0.01) continue;
+    if(p.y < -8){ p.y = canvas.height + 8; p.x = Math.random()*canvas.width; }
+    const alpha = fade * (0.22 + p.z*0.45);
+    if(alpha < 0.02) continue;
+    ctx.fillStyle = `rgba(232,184,109,${alpha.toFixed(2)})`;
     ctx.beginPath();
-    ctx.arc(px, py, p.r*p.z, 0, Math.PI*2);
-    ctx.fillStyle = p.accent ? `rgba(168,121,255,${alpha})` : `rgba(255,255,255,${alpha*0.7})`;
+    ctx.arc(p.x, p.y, p.r * p.z, 0, Math.PI*2);
+    ctx.fill();
+  }
+  /* batch cream dots */
+  for(const p of coolBucket){
+    p.y -= p.vy;
+    if(p.y < -8){ p.y = canvas.height + 8; p.x = Math.random()*canvas.width; }
+    const alpha = fade * (0.12 + p.z*0.28);
+    if(alpha < 0.02) continue;
+    ctx.fillStyle = `rgba(245,237,224,${alpha.toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r * p.z, 0, Math.PI*2);
     ctx.fill();
   }
 
-  /* hero parallax */
-  const rotX = mouseY * -8;
-  const rotY = mouseX * 8;
-  heroInner.style.transform = `perspective(1100px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${-heroProgress*180}px) scale(${1 - heroProgress*0.25})`;
+  requestAnimationFrame(drawParticles);
+}
+
+/* restart the loop after resize so it keeps running */
+window.addEventListener('resize', () => requestAnimationFrame(drawParticles), {passive:true});
+requestAnimationFrame(drawParticles);
+
+/* --- Worker B: scroll-driven layout updates ---
+   Cache element offsets ONCE (they don't change unless resized).
+   On scroll, use raw scrollY math — zero getBoundingClientRect calls. */
+
+/* cache stack wrapper positions */
+let wrapCache = [];
+function cachePositions(){
+  wrapCache = stackWrappers.map(wrap => {
+    const cards = Array.from(wrap.querySelectorAll('.project-card'));
+    return { top: wrap.offsetTop, height: wrap.offsetHeight, cards };
+  });
+  if(swirlLen){
+    swirlCache = { top: swirlSection.offsetTop, height: swirlSection.offsetHeight };
+  }
+}
+let swirlCache = null;
+window.addEventListener('load', () => {
+  cachePositions();
+  setTimeout(cachePositions, 400); /* run again after fonts settle */
+});
+window.addEventListener('resize', () => setTimeout(cachePositions, 200), {passive:true});
+
+function onScroll(){
+  const sy = window.scrollY;
+  const vh = window.innerHeight;
+
+  /* hero fade */
+  const heroProgress = clamp(sy / vh, 0, 1);
   heroInner.style.opacity = 1 - heroProgress;
+  heroInner.style.transform = `scale(${1 - heroProgress * 0.15}) translateY(${heroProgress * -40}px)`;
   heroEl.style.pointerEvents = heroProgress > 0.95 ? 'none' : 'auto';
 
-  /* topbar visibility */
-  if(scrollY > window.innerHeight*0.82){ topbar.classList.add('visible'); }
-  else { topbar.classList.remove('visible'); }
+  /* topbar */
+  topbar.classList.toggle('visible', sy > vh * 0.82);
 
-  /* swirl draw */
-  if(swirlLen){
-    const r = swirlSection.getBoundingClientRect();
-    const prog = clamp((window.innerHeight - r.top) / (r.height + window.innerHeight), 0, 1);
-    swirlPath.style.strokeDashoffset = swirlLen * (1 - prog);
-  }
+  /* swirl handled by animateSwirl() rAF above */
 
-  /* project stacks */
-  for(const wrap of stackWrappers){
-    const r = wrap.getBoundingClientRect();
-    const scrollable = r.height - window.innerHeight;
-    const prog = scrollable > 0 ? clamp(-r.top / scrollable, 0, 1) : 0;
-    const cards = wrap.querySelectorAll('.project-card');
-    const n = cards.length;
-    // which card index is "current" — rounds to nearest whole number
-    const activeIndex = Math.round(prog * (n - 1));
-    cards.forEach((card, i) => {
-      // Cards below active: stacked behind (lower z), fully hidden
-      // Active card: on top, fully visible
-      // Cards above active: hidden, waiting their turn
+  /* card stacks */
+  for(const c of wrapCache){
+    const scrollable = c.height - vh;
+    const prog = scrollable > 0 ? clamp((sy - c.top) / scrollable, 0, 1) : 0;
+    const n = c.cards.length;
+    const activeIndex = Math.min(Math.round(prog * (n - 1)), n - 1);
+    c.cards.forEach((card, i) => {
       const isActive = i === activeIndex;
-      const isPast   = i < activeIndex;
-      card.style.opacity  = isActive ? '1' : '0';
-      card.style.zIndex   = isActive ? n + 1 : isPast ? i : i;
+      card.style.opacity = isActive ? '1' : '0';
+      card.style.zIndex  = isActive ? n + 1 : i;
       card.style.transform = isActive
-        ? 'translate(-50%,-50%) scale(1)'
+        ? 'translate(-50%,-50%)'
         : i > activeIndex
-          ? 'translate(-50%,-50%) translateY(60px) scale(0.96)'
-          : 'translate(-50%,-50%) translateY(-30px) scale(0.96)';
+          ? 'translate(-50%,-50%) translateY(50px)'
+          : 'translate(-50%,-50%) translateY(-50px)';
       card.style.pointerEvents = isActive ? 'auto' : 'none';
     });
   }
-
-  requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
 
-/* occasional organic flicker burst on the logo, layered on top of the CSS pulse */
-const heroLogo = document.getElementById('hero-logo');
-function scheduleBurst(){
-  const delay = 2200 + Math.random()*4500;
-  setTimeout(() => {
-    heroLogo.classList.add('burst');
-    setTimeout(() => heroLogo.classList.remove('burst'), 90 + Math.random()*120);
-    scheduleBurst();
-  }, delay);
+window.addEventListener('scroll', onScroll, {passive:true});
+/* run once on load */
+onScroll();
+
+
+
+/* =============================================================
+   COOKIE CONSENT + AD TRACKING
+   EDIT ME: replace the two IDs below with your real ones.
+   GA4_ID  → looks like "G-XXXXXXXXXX"  (Google Analytics 4)
+   AW_ID   → looks like "AW-XXXXXXXXX"  (Google Ads)
+   Find them in Google Analytics > Admin > Data Streams
+   and Google Ads > Tools > Conversion tracking.
+============================================================= */
+const GA4_ID = 'G-XXXXXXXXXX';
+const AW_ID  = 'AW-XXXXXXXXX';
+
+const cookieBar = document.getElementById('cookie-bar');
+const CONSENT_KEY = 'nexvr_cookie_consent';
+
+function loadTracking(){
+  /* inject gtag.js script — one tag covers both GA4 and Google Ads */
+  const sc = document.createElement('script');
+  sc.async = true;
+  sc.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
+  document.head.appendChild(sc);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', GA4_ID);   /* Google Analytics 4 */
+  gtag('config', AW_ID);    /* Google Ads */
+  gtag('consent', 'update', {
+    analytics_storage: 'granted',
+    ad_storage:        'granted',
+    ad_user_data:      'granted',
+    ad_personalization:'granted'
+  });
 }
-scheduleBurst();
+
+function hideCookieBar(){ cookieBar.classList.add('hidden'); }
+
+/* default consent state — denied until user clicks Accept */
+window.dataLayer = window.dataLayer || [];
+function gtag(){ dataLayer.push(arguments); }
+window.gtag = gtag;
+gtag('consent','default',{
+  analytics_storage:'denied',
+  ad_storage:'denied',
+  ad_user_data:'denied',
+  ad_personalization:'denied'
+});
+
+/* check if they already chose */
+const savedConsent = localStorage.getItem(CONSENT_KEY);
+if(savedConsent === 'accepted'){ loadTracking(); hideCookieBar(); }
+else if(savedConsent === 'declined'){ hideCookieBar(); }
+
+document.getElementById('cookie-accept').addEventListener('click', () => {
+  localStorage.setItem(CONSENT_KEY, 'accepted');
+  loadTracking();
+  hideCookieBar();
+});
+document.getElementById('cookie-decline').addEventListener('click', () => {
+  localStorage.setItem(CONSENT_KEY, 'declined');
+  hideCookieBar();
+});
+
 
 /* ---------------- services circle highlight ---------------- */
 const serviceItems = document.querySelectorAll('.service-item');
 const serviceObserver = new IntersectionObserver(entries => {
   entries.forEach(en => en.target.classList.toggle('active', en.isIntersecting));
-}, { threshold:0.6 });
+}, {
+  rootMargin: '-38% 0px -38% 0px', /* only fires when item is in the middle 24% strip of screen */
+  threshold: 0
+});
 serviceItems.forEach(item => serviceObserver.observe(item));
 
 
@@ -1272,7 +1418,8 @@ document.addEventListener('click', e => {
 
   document.getElementById('po-service').textContent = service.label;
   document.getElementById('po-title').textContent = p.name;
-  document.getElementById('po-owner').textContent = `Built for ${p.owner} — by ${p.developer}`;
+  document.getElementById('po-image-label').textContent = p.name;
+  document.getElementById('po-owner').textContent = (p.owner === 'Own product' || p.owner === 'Own brand') ? `Own product — by ${p.developer}` : `Client: ${p.owner} — by ${p.developer}`;
   document.getElementById('po-desc').textContent = p.desc;
   document.getElementById('po-tags').innerHTML = (p.tags||[]).map(t=>`<span>${t}</span>`).join('');
   const link = document.getElementById('po-link');
