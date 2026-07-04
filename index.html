@@ -1508,6 +1508,38 @@ function initShowcaseStrips(){
         }
       });
     }
+
+    let isPaused = false;
+    let lastFrame = performance.now();
+
+    const pauseAutoscroll = () => { isPaused = true; };
+    const resumeAutoscroll = () => { isPaused = false; lastFrame = performance.now(); };
+
+    strip.addEventListener('mouseenter', pauseAutoscroll);
+    strip.addEventListener('mouseleave', resumeAutoscroll);
+    strip.addEventListener('pointerdown', pauseAutoscroll);
+    strip.addEventListener('pointerup', resumeAutoscroll);
+    strip.addEventListener('pointercancel', resumeAutoscroll);
+    strip.addEventListener('touchstart', pauseAutoscroll, {passive:true});
+    strip.addEventListener('touchend', resumeAutoscroll, {passive:true});
+    strip.addEventListener('touchcancel', resumeAutoscroll, {passive:true});
+    strip.addEventListener('focusin', pauseAutoscroll);
+    strip.addEventListener('focusout', resumeAutoscroll);
+
+    const tick = (now) => {
+      if(!isPaused){
+        const delta = (now - lastFrame) * 0.18;
+        const maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
+        strip.scrollLeft += delta;
+        if(strip.scrollLeft >= maxScroll - 1){
+          strip.scrollLeft = 0;
+        }
+      }
+      lastFrame = now;
+      requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
   });
 }
 initShowcaseStrips();
