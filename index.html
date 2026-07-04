@@ -437,15 +437,23 @@
     pointer-events:none;cursor:default;opacity:0.9;
   }
   .project-strip{
+    overflow:hidden;
+    padding:8px 0 14px;
+  }
+  .project-strip-track{
     display:flex;
     gap:24px;
-    overflow-x:auto;
-    padding:8px 8px 14px;
-    scroll-snap-type:x proximity;
-    scrollbar-width:none;
-    -ms-overflow-style:none;
+    width:max-content;
+    will-change:transform;
+    animation:showcase-marquee 24s linear infinite;
   }
-  .project-strip::-webkit-scrollbar{display:none;}
+  .project-strip:hover .project-strip-track{
+    animation-play-state:paused;
+  }
+  @keyframes showcase-marquee{
+    from{transform:translateX(0);} 
+    to{transform:translateX(-50%);} 
+  }
   .project-card{
     display:block;
     flex:0 0 min(640px,86vw);
@@ -1145,6 +1153,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
       </article>
     `;
   }).join('');
+  const marqueeCards = `${cardsHTML}${cardsHTML}`;
   return `
     <div class="showcase-section" data-showcase-section="${s.id}">
       <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
@@ -1158,7 +1167,9 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
               <button class="project-strip-arrow" type="button" tabindex="-1">→</button>
             </div>
             <div class="project-strip">
-              ${cardsHTML}
+              <div class="project-strip-track">
+                ${marqueeCards}
+              </div>
             </div>
           </div>
           <div class="project-swipe-hint">Swipe sideways to browse the projects</div>
@@ -1494,52 +1505,12 @@ document.addEventListener('click', e => {
   document.body.style.overflow = 'hidden';
 });
 
-const showcaseSections = Array.from(document.querySelectorAll('.showcase-section'));
 function initShowcaseStrips(){
-  showcaseSections.forEach(section => {
-    const strip = section.querySelector('.project-strip');
-    if(!strip) return;
-    const cards = Array.from(strip.querySelectorAll('.project-card'));
-    if(cards.length > 2){
-      requestAnimationFrame(() => {
-        const firstRealCard = cards[1];
-        if(firstRealCard){
-          strip.scrollLeft = Math.max(0, firstRealCard.offsetLeft - 8);
-        }
-      });
-    }
-
-    let isPaused = false;
-    let lastFrame = performance.now();
-
-    const pauseAutoscroll = () => { isPaused = true; };
-    const resumeAutoscroll = () => { isPaused = false; lastFrame = performance.now(); };
-
-    strip.addEventListener('mouseenter', pauseAutoscroll);
-    strip.addEventListener('mouseleave', resumeAutoscroll);
-    strip.addEventListener('pointerdown', pauseAutoscroll);
-    strip.addEventListener('pointerup', resumeAutoscroll);
-    strip.addEventListener('pointercancel', resumeAutoscroll);
-    strip.addEventListener('touchstart', pauseAutoscroll, {passive:true});
-    strip.addEventListener('touchend', resumeAutoscroll, {passive:true});
-    strip.addEventListener('touchcancel', resumeAutoscroll, {passive:true});
-    strip.addEventListener('focusin', pauseAutoscroll);
-    strip.addEventListener('focusout', resumeAutoscroll);
-
-    const tick = (now) => {
-      if(!isPaused){
-        const delta = (now - lastFrame) * 0.18;
-        const maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
-        strip.scrollLeft += delta;
-        if(strip.scrollLeft >= maxScroll - 1){
-          strip.scrollLeft = 0;
-        }
-      }
-      lastFrame = now;
-      requestAnimationFrame(tick);
-    };
-
-    requestAnimationFrame(tick);
+  document.querySelectorAll('.project-strip').forEach(strip => {
+    const track = strip.querySelector('.project-strip-track');
+    if(!track) return;
+    const cardCount = track.children.length;
+    track.style.animationDuration = `${Math.max(18, cardCount * 1.4)}s`;
   });
 }
 initShowcaseStrips();
