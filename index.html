@@ -418,6 +418,7 @@
     overflow:visible;
     background:transparent;
   }
+  .showcase-section.active-showcase{overflow:hidden;}
   .project-card{
     display:none;
     width:min(640px,86vw);
@@ -1463,10 +1464,22 @@ document.addEventListener('click', e => {
   document.body.style.overflow = 'hidden';
 });
 
+let activeShowcaseSection = null;
+function setShowcaseMode(section, enabled){
+  if(!section) return;
+  section.classList.toggle('active-showcase', enabled);
+  if(enabled){
+    activeShowcaseSection = section;
+    document.body.style.overflow = 'hidden';
+  } else if(activeShowcaseSection === section){
+    activeShowcaseSection = null;
+    document.body.style.overflow = '';
+  }
+}
+
 document.addEventListener('click', e => {
   const button = e.target.closest('[data-nav-next]');
   if(!button) return;
-  const sid = button.dataset.sid;
   const section = button.closest('.showcase-section');
   if(!section) return;
   const cards = Array.from(section.querySelectorAll('.project-card'));
@@ -1475,7 +1488,13 @@ document.addEventListener('click', e => {
   if(nextIndex >= cards.length){
     const nextSection = section.nextElementSibling?.closest('.showcase-section');
     if(nextSection){
+      setShowcaseMode(section, false);
+      setShowcaseMode(nextSection, true);
       nextSection.scrollIntoView({behavior:'smooth', block:'start'});
+      const nextCards = Array.from(nextSection.querySelectorAll('.project-card'));
+      nextCards.forEach((card, i) => card.classList.toggle('active', i === 0));
+      const nextButton = nextSection.querySelector('[data-nav-next]');
+      if(nextButton) nextButton.textContent = 'Next showcase ↓';
       return;
     }
     nextIndex = cards.length - 1;
@@ -1483,6 +1502,26 @@ document.addEventListener('click', e => {
   cards.forEach((card, i) => card.classList.toggle('active', i === nextIndex));
   const nextLabel = nextIndex + 1 >= cards.length ? 'Next section ↓' : 'Next showcase ↓';
   button.textContent = nextLabel;
+  setShowcaseMode(section, true);
+});
+
+document.addEventListener('wheel', e => {
+  if(activeShowcaseSection){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}, {passive:false});
+
+document.addEventListener('touchmove', e => {
+  if(activeShowcaseSection){
+    e.preventDefault();
+  }
+}, {passive:false});
+
+document.addEventListener('keydown', e => {
+  if(activeShowcaseSection && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp' || e.key === ' ')) {
+    e.preventDefault();
+  }
 });
 
 function closeProjectOverlay(){
