@@ -460,7 +460,7 @@
     animation:navArrowSlide .45s cubic-bezier(.16,1,.3,1);
   }
   .project-nav-btn:hover{background:var(--accent);color:#000;transform:translateY(-2px);box-shadow:0 0 32px rgba(200,146,42,0.38);}
-  .project-nav-btn.is-hidden{display:none;}
+  .project-nav-btn.is-hidden{opacity:0;pointer-events:none;transform:translateY(6px);}
   .project-nav-text{
     font-size:0.72rem;letter-spacing:0.24em;text-transform:uppercase;
     color:var(--grey);font-weight:700;
@@ -1518,7 +1518,7 @@ function syncShowcaseNav(section){
   const nextBtn = section.querySelector('[data-nav-next]');
   const text = section.querySelector('.project-nav-text');
   const sectionIndex = showcaseSections.indexOf(section);
-  const showPrev = sectionIndex > 0 && !sectionComplete;
+  const showPrev = sectionIndex > 0 && activeIndex > 0;
   if(prevBtn){ prevBtn.classList.toggle('is-hidden', !showPrev); }
   if(nextBtn){ nextBtn.style.display = sectionComplete ? 'none' : ''; }
   if(text){ text.style.display = sectionComplete ? '' : 'none'; }
@@ -1550,7 +1550,7 @@ const showcaseObserver = new IntersectionObserver(entries => {
       setShowcaseLock(section, 'scroll');
     }
   });
-}, { threshold:0.35, rootMargin:'-10% 0px -30% 0px' });
+}, { threshold:0.95, rootMargin:'0px 0px -10% 0px' });
 showcaseSections.forEach(section => showcaseObserver.observe(section));
 
 function activateSection(section, direction){
@@ -1598,6 +1598,8 @@ document.addEventListener('click', e => {
     const sectionId = anchor.getAttribute('href').slice(1);
     const section = document.getElementById(sectionId)?.closest('.showcase-section');
     if(section){
+      const cards = getShowcaseCards(section);
+      cards.forEach((card, i) => card.classList.toggle('active', i === 0));
       section.dataset.showcaseActivated = 'true';
       setShowcaseLock(section, 'button');
     }
