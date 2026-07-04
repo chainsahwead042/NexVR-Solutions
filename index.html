@@ -337,6 +337,8 @@
     padding:30px 0;
     border-bottom:1px solid var(--line);
     transition:padding .3s ease;
+    text-decoration:none;
+    cursor:pointer;
   }
   .service-num{
     width:56px;height:56px;flex:0 0 auto;
@@ -425,10 +427,18 @@
     box-shadow:0 0 28px rgba(200,146,42,0.35), inset 0 0 20px rgba(200,146,42,0.07);
     contain:layout paint;
   }
-  .project-image span{
+  .project-image span,
+  .project-placeholder{
     font-family:var(--font-landing);
     font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
     color:var(--grey-dim);
+  }
+  .project-placeholder{
+    padding:24px;
+    text-align:center;
+    line-height:1.6;
+    font-weight:700;
+    color:var(--white);
   }
   .project-info{
     display:flex;align-items:center;justify-content:space-between;
@@ -1011,7 +1021,7 @@ const SERVICES = [
       {name:"LanceIt", owner:"Own product", developer:"Mughera Yasin",
        desc:"YouTube creator lead gen tool — finds channels in your niche, drafts personalised outreach via Claude API, sends through Gmail OAuth. Node.js backend, SQLite, freemium via Freemius.",
        tags:["Node.js","YouTube API","Gmail OAuth","Claude API","SQLite"],
-       img:"", url:"#"},
+       img:"", placeholder:"Client did not approve because it was his private application.", url:"#"},
       {name:"AutoFlow SaaS", owner:"Own product", developer:"Mughera Yasin",
        desc:"Full AI marketing automation platform with React dashboard. Multi-platform publishing, AI inbox agent for natural-language replies, ngrok webhook auto-registration.",
        tags:["React","Node.js","Multi-platform","AI","Webhooks"],
@@ -1059,7 +1069,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
   const cardsHTML = s.projects.map((p,i) => `
     <article class="project-card" data-index="${i}">
       <div class="project-image">
-        ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<span>${p.name}</span>`}
+        ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<div class="project-placeholder"><strong>${p.placeholder || p.name}</strong></div>`}
       </div>
       <div class="project-info">
         <div class="project-meta">
@@ -1163,10 +1173,10 @@ const stackWrappers = Array.from(document.querySelectorAll('.stack-wrapper'));
 /* ---------------- render services list + menu projects list ---------------- */
 const servicesListEl = document.getElementById('services-list');
 servicesListEl.innerHTML = SERVICES.map(s => `
-  <div class="service-item" id="service-${s.id}">
+  <a class="service-item" id="service-${s.id}" href="#showcase-${s.id}">
     <div class="service-num">${s.num}</div>
     <div class="service-label">${s.label}</div>
-  </div>
+  </a>
 `).join('');
 
 document.getElementById('menu-projects-list').innerHTML = SERVICES.map(s =>
@@ -1300,7 +1310,7 @@ function onScroll(){
     const scrollable = c.height - vh;
     const prog = scrollable > 0 ? clamp((sy - c.top) / scrollable, 0, 1) : 0;
     const n = c.cards.length;
-    const activeIndex = Math.min(Math.floor(prog * n), n - 1);
+    const activeIndex = Math.min(Math.floor(prog * (n - 1) + 0.2), n - 1);
     c.cards.forEach((card, i) => {
       const isActive = i === activeIndex;
       card.style.opacity = isActive ? '1' : '0';
