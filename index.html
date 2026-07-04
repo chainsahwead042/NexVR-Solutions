@@ -411,27 +411,40 @@
     opacity:1;
   }
 
-  .stack-wrapper{position:relative;}
+  .stack-wrapper{position:relative;padding:24px 0 40px;}
   .stack-sticky{
-    position:sticky;top:0;
-    height:100vh;
-    display:flex;align-items:center;justify-content:center;
-    overflow:hidden;
-    background:var(--black);
+    position:relative;
+    display:block;
+    overflow:visible;
+    background:transparent;
   }
   .project-card{
-    position:absolute;top:50%;left:50%;
+    display:none;
     width:min(640px,86vw);
-    transform:translate(-50%,-50%);
-    opacity:0;
-    pointer-events:none;
-    will-change:transform,opacity;
+    margin:0 auto;
     background:var(--black);
     padding:18px;
     border-radius:12px;
-    transition:transform .3s cubic-bezier(.16,1,.3,1);
-    /* no opacity transition — swap is instant and opaque */
+    box-shadow:0 0 28px rgba(0,0,0,0.25);
   }
+  .project-card.active{display:block;}
+  .project-nav{
+    display:flex;justify-content:center;
+    margin-top:22px;
+  }
+  .project-nav-btn{
+    border:1px solid var(--accent);
+    background:transparent;
+    color:var(--accent);
+    padding:10px 16px;
+    border-radius:999px;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .2s ease,color .2s ease,transform .2s ease;
+  }
+  .project-nav-btn:hover{background:var(--accent);color:#000;transform:translateY(-2px);}
   .project-image{
     width:100%;
     aspect-ratio:16/10;
@@ -544,11 +557,20 @@
     margin-bottom:48px;
     box-shadow:0 0 40px rgba(200,146,42,0.25),inset 0 0 30px rgba(200,146,42,0.08);
     animation:project-glow-pulse 3.6s ease-in-out infinite;
+    padding:24px;
   }
-  .project-overlay-image span{
-    font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--grey-dim);
-    font-family:var(--font-landing);
+  .project-overlay-image-link{
+    display:inline-flex;align-items:center;justify-content:center;
+    text-align:center;
+    font-size:13px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--white);text-decoration:none;
+    font-family:var(--font-body);
+    font-weight:600;
+    padding:14px 24px;border-radius:999px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.06);
   }
+  .project-overlay-image-link:hover{border-color:var(--accent);color:var(--accent);}
   .project-overlay-desc{
     font-size:clamp(15px,1.8vw,17px);line-height:1.75;
     color:#ccc;margin-bottom:38px;max-width:640px;
@@ -913,7 +935,7 @@
     <p class="project-overlay-service" id="po-service"></p>
     <h2 class="project-overlay-title" id="po-title"></h2>
     <p class="project-overlay-owner" id="po-owner"></p>
-    <div class="project-overlay-image" id="po-image-box"><span id="po-image-label">Project image</span></div>
+    <div class="project-overlay-image" id="po-image-box"><a class="project-overlay-image-link" id="po-image-link" href="#" target="_blank" rel="noopener">Open project</a></div>
     <p class="project-overlay-desc" id="po-desc"></p>
     <div class="project-overlay-tags" id="po-tags"></div>
     <div class="project-overlay-actions">
@@ -1083,7 +1105,7 @@ const showcasesRoot = document.getElementById('showcases-root');
 showcasesRoot.innerHTML = SERVICES.map(s => {
   const words = s.intro.split(' ').map((w,i) => `<span class="reveal-word"><span style="--d:${i*70}ms">${w}</span></span>`).join(' ');
   const cardsHTML = s.projects.map((p,i) => `
-    <article class="project-card" data-index="${i}">
+    <article class="project-card${i===0?' active':''}" data-index="${i}">
       <div class="project-image">
         ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<div class="project-placeholder"><strong>${p.placeholder || p.name}</strong></div>`}
       </div>
@@ -1099,18 +1121,24 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
       </div>
     </article>
   `).join('');
+  const nextLabel = s.projects.length > 1 ? 'Next showcase ↓' : 'Next section ↓';
   return `
-    <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
-      <h2>${words}</h2>
-    </section>
-    <div class="stack-wrapper" style="height:${Math.max(140, s.projects.length * 120)}vh;">
-      <div class="stack-sticky">
-        ${cardsHTML}
+    <div class="showcase-section" data-showcase-section="${s.id}">
+      <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
+        <h2>${words}</h2>
+      </section>
+      <div class="stack-wrapper">
+        <div class="stack-sticky">
+          ${cardsHTML}
+          <div class="project-nav">
+            <button class="project-nav-btn" type="button" data-nav-next data-sid="${s.id}">${nextLabel}</button>
+          </div>
+        </div>
       </div>
+      <section class="service-cta-section">
+        <button class="service-cta-btn" type="button" data-open-modal data-target="developer" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
+      </section>
     </div>
-    <section class="service-cta-section">
-      <button class="service-cta-btn" type="button" data-open-modal data-target="developer" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
-    </section>
   `;
 }).join('');
 
@@ -1288,24 +1316,6 @@ requestAnimationFrame(drawParticles);
    Cache element offsets ONCE (they don't change unless resized).
    On scroll, use raw scrollY math — zero getBoundingClientRect calls. */
 
-/* cache stack wrapper positions */
-let wrapCache = [];
-function cachePositions(){
-  wrapCache = stackWrappers.map(wrap => {
-    const cards = Array.from(wrap.querySelectorAll('.project-card'));
-    return { top: wrap.offsetTop, height: wrap.offsetHeight, cards };
-  });
-  if(swirlLen){
-    swirlCache = { top: swirlSection.offsetTop, height: swirlSection.offsetHeight };
-  }
-}
-let swirlCache = null;
-window.addEventListener('load', () => {
-  cachePositions();
-  setTimeout(cachePositions, 400); /* run again after fonts settle */
-});
-window.addEventListener('resize', () => setTimeout(cachePositions, 200), {passive:true});
-
 function onScroll(){
   const sy = window.scrollY;
   const vh = window.innerHeight;
@@ -1320,27 +1330,6 @@ function onScroll(){
   topbar.classList.toggle('visible', sy > vh * 0.82);
 
   /* swirl handled by animateSwirl() rAF above */
-
-  /* card stacks */
-  for(const c of wrapCache){
-    const scrollable = c.height - vh;
-    const prog = scrollable > 0 ? clamp((sy - c.top) / scrollable, 0, 1) : 0;
-    const n = c.cards.length;
-    const safeProg = Math.max(0, Math.min(1, prog));
-    const easedProg = Math.pow(safeProg, 1.2);
-    const activeIndex = Math.min(Math.round(easedProg * (n - 1)), n - 1);
-    c.cards.forEach((card, i) => {
-      const isActive = i === activeIndex;
-      card.style.opacity = isActive ? '1' : '0';
-      card.style.zIndex  = isActive ? n + 1 : i;
-      card.style.transform = isActive
-        ? 'translate(-50%,-50%)'
-        : i > activeIndex
-          ? 'translate(-50%,-50%) translateY(50px)'
-          : 'translate(-50%,-50%) translateY(-50px)';
-      card.style.pointerEvents = isActive ? 'auto' : 'none';
-    });
-  }
 }
 
 window.addEventListener('scroll', onScroll, {passive:true});
@@ -1446,13 +1435,25 @@ document.addEventListener('click', e => {
 
   document.getElementById('po-service').textContent = service.label;
   document.getElementById('po-title').textContent = p.name;
-  document.getElementById('po-image-label').textContent = p.name;
-  document.getElementById('po-owner').textContent = (p.owner === 'Own product' || p.owner === 'Own brand') ? `Own product — by ${p.developer}` : `Client: ${p.owner} — by ${p.developer}`;
+  document.getElementById('po-owner').textContent = (p.owner === 'Own product' || p.owner === 'Own brand') ? `Own product — by ${p.developer}` : p.owner === 'Client wants to stay private' ? `Client wants to stay private — by ${p.developer}` : `Client: ${p.owner} — by ${p.developer}`;
   document.getElementById('po-desc').textContent = p.desc;
   document.getElementById('po-tags').innerHTML = (p.tags||[]).map(t=>`<span>${t}</span>`).join('');
   const link = document.getElementById('po-link');
-  link.href = p.url || '#';
-  link.style.display = (p.url && p.url !== '#') ? '' : 'none';
+  const mediaLink = document.getElementById('po-image-link');
+  const hasLink = Boolean(p.url && p.url !== '#');
+  const isBlocked = p.name === 'LanceIt' || p.owner === 'Client wants to stay private';
+  if(hasLink && !isBlocked){
+    mediaLink.href = p.url;
+    mediaLink.textContent = 'Open project ↗';
+    mediaLink.style.display = '';
+  } else {
+    mediaLink.removeAttribute('href');
+    mediaLink.textContent = isBlocked ? 'Blocked' : 'No public link';
+    mediaLink.style.display = '';
+  }
+  link.href = hasLink && !isBlocked ? p.url : '#';
+  link.textContent = hasLink && !isBlocked ? 'Visit project ↗' : 'Blocked';
+  link.style.display = '';
   document.getElementById('po-contact').onclick = () => {
     closeProjectOverlay();
     openModal('project-developer', service.label, p.name, p.developer);
@@ -1460,6 +1461,28 @@ document.addEventListener('click', e => {
 
   projectOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+});
+
+document.addEventListener('click', e => {
+  const button = e.target.closest('[data-nav-next]');
+  if(!button) return;
+  const sid = button.dataset.sid;
+  const section = button.closest('.showcase-section');
+  if(!section) return;
+  const cards = Array.from(section.querySelectorAll('.project-card'));
+  const currentIndex = cards.findIndex(card => card.classList.contains('active'));
+  let nextIndex = currentIndex + 1;
+  if(nextIndex >= cards.length){
+    const nextSection = section.nextElementSibling?.closest('.showcase-section');
+    if(nextSection){
+      nextSection.scrollIntoView({behavior:'smooth', block:'start'});
+      return;
+    }
+    nextIndex = cards.length - 1;
+  }
+  cards.forEach((card, i) => card.classList.toggle('active', i === nextIndex));
+  const nextLabel = nextIndex + 1 >= cards.length ? 'Next section ↓' : 'Next showcase ↓';
+  button.textContent = nextLabel;
 });
 
 function closeProjectOverlay(){
