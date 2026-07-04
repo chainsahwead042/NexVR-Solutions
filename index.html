@@ -988,11 +988,11 @@ const SERVICES = [
       {name:"Dr. Omer Zubair", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
        desc:"Full website for a UK-trained orthopedic surgeon in Lahore. Tabbed treatments, WhatsApp integration, Google Ads GCLID tracking, blog CMS backed by GitHub, and a hidden admin panel — all in one HTML file.",
        tags:["HTML/CSS","Apps Script","GitHub","GCLID Tracking"],
-       img:"img/dr-omer.png", url:"#"},
+       img:"img/dromerzubair.png", url:"#"},
       {name:"KOKO Japan Cars", owner:"KOKO Japan Cars", developer:"Mughera Yasin",
        desc:"JDM car dealership redesign with a black/lime-yellow F1 theme. Real inventory with JPY/USD pricing, event cards, YouTube embed, ambient ember particles and 3D tilt-on-hover cards.",
        tags:["HTML/CSS","Particles","3D Tilt","Inventory System"],
-       img:"img/koko.png", url:"#"},
+       img:"img/kokojapancars.png", url:"#"},
       {name:"Fobix Agency", owner:"Own brand", developer:"Mughera Yasin",
        desc:"Immersive CRT/Game Boy nostalgia website. Web Audio API ambient sound (drone, melody, CRT crackle), retro device UIs (Game Boy, Winamp, iPod), barrel-distortion scroll and a click-to-enter intro.",
        tags:["HTML/CSS","Web Audio API","Retro UI","Single File"],
@@ -1000,7 +1000,7 @@ const SERVICES = [
       {name:"Med School Insiders Redesign", owner:"Med School Insiders", developer:"Mughera Yasin",
        desc:"Dark aesthetic redesign concept — black/blue palette, Space Mono font, scanline overlay, glassmorphism nav, all original links preserved.",
        tags:["HTML/CSS","Dark Theme","Glassmorphism","Scanlines"],
-       img:"img/msi.png", url:"#"}
+       img:"img/medschoolinsiders.png", url:"#"}
     ]},
   { id:"app-design", num:"02", label:"App Design", plural:"Apps", intro:"Explore the apps we've built",
     projects:[
@@ -1015,18 +1015,18 @@ const SERVICES = [
       {name:"AutoFlow SaaS", owner:"Own product", developer:"Mughera Yasin",
        desc:"Full AI marketing automation platform with React dashboard. Multi-platform publishing, AI inbox agent for natural-language replies, ngrok webhook auto-registration.",
        tags:["React","Node.js","Multi-platform","AI","Webhooks"],
-       img:"img/autoflow.png", url:"#"}
+       img:"img/autoflowsaas.png", url:"#"}
     ]},
   { id:"marketing-automation", num:"03", label:"Marketing Automation", plural:"Automations", intro:"Browse our growth systems",
     projects:[
       {name:"Serplix Surplus Recovery", owner:"Serplix", developer:"Mughera Yasin",
        desc:"Two-workflow n8n automation for surplus fund recovery outreach across USA, Canada, England, Australia and Dubai. Google Sheets CRM, APIFlash screenshot proof, email sequences and automated negotiation logic.",
        tags:["n8n","Google Sheets","Email Automation","APIFlash","Multi-country"],
-       img:"img/serplix.png", url:"#"},
+       img:"img/serplex.png", url:"#"},
       {name:"Dr. Omer GCLID Tracker", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
        desc:"Google Apps Script system that captures Google Ads click IDs from incoming patients, logs them to a Sheet and ties ad spend back to actual bookings — full attribution on paid traffic.",
        tags:["Google Apps Script","Google Ads","GCLID","Attribution","Sheets"],
-       img:"img/dr-omer.png", url:"#"}
+       img:"img/dromerzubair.png", url:"#"}
     ]},
   { id:"ai-agents", num:"04", label:"AI Agents", plural:"Agents", intro:"See the agents we've deployed",
     projects:[
@@ -1040,7 +1040,7 @@ const SERVICES = [
       {name:"Dr. Omer Zubair Patient Bot", owner:"Dr. Omer Zubair", developer:"Mughera Yasin",
        desc:"AI chatbot embedded in an orthopedic surgeon's website — answers patient questions, books appointments and captures leads, all synced to Google Sheets via Apps Script.",
        tags:["AI Chatbot","Google Sheets","Apps Script","WhatsApp"],
-       img:"img/dr-omer.png", url:"#"}
+       img:"img/dromerzubair.png", url:"#"}
     ]},
   { id:"ai-voice-agents", num:"06", label:"AI Voice Agents", plural:"Voice Agents", intro:"Hear what we've built",
     projects:[
@@ -1300,7 +1300,7 @@ function onScroll(){
     const scrollable = c.height - vh;
     const prog = scrollable > 0 ? clamp((sy - c.top) / scrollable, 0, 1) : 0;
     const n = c.cards.length;
-    const activeIndex = Math.min(Math.round(prog * (n - 1)), n - 1);
+    const activeIndex = Math.min(Math.floor(prog * n), n - 1);
     c.cards.forEach((card, i) => {
       const isActive = i === activeIndex;
       card.style.opacity = isActive ? '1' : '0';
