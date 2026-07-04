@@ -440,6 +440,10 @@
     overflow:hidden;
     padding:8px 0 14px;
   }
+  .project-strip.is-static .project-strip-track{
+    animation:none;
+    transform:none;
+  }
   .project-strip-track{
     display:flex;
     gap:24px;
@@ -825,8 +829,23 @@
     padding:8px 14px;border-radius:4px;font-size:12px;margin-bottom:20px;
   }
   #admin-page .refresh:hover{color:var(--white);border-color:var(--accent);}
+  #admin-page .admin-form-card{
+    border:1px solid var(--line);border-radius:10px;padding:20px;background:rgba(255,255,255,0.03);margin-bottom:24px;
+  }
+  #admin-page .admin-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+  #admin-page .admin-form-grid .full{grid-column:1 / -1;}
+  #admin-page .admin-form-grid label{display:block;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);margin-bottom:6px;}
+  #admin-page .admin-form-grid input,
+  #admin-page .admin-form-grid textarea,
+  #admin-page .admin-form-grid select{
+    width:100%;background:var(--near-black);border:1px solid var(--line);color:var(--white);padding:11px 12px;border-radius:6px;font-family:inherit;font-size:14px;
+  }
+  #admin-page .admin-form-grid textarea{min-height:96px;resize:vertical;}
+  #admin-page .admin-form-submit{margin-top:10px;background:var(--accent);color:var(--white);border:none;border-radius:6px;padding:11px 16px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;font-size:12px;}
+  #admin-page .admin-form-status{margin-top:12px;font-size:13px;color:var(--grey);min-height:18px;}
   #admin-page .back-link{display:inline-block;margin-bottom:30px;color:var(--grey);font-size:12px;letter-spacing:0.05em;text-transform:uppercase;}
   #admin-page .back-link:hover{color:var(--accent);}
+  @media (max-width:700px){#admin-page .admin-form-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -1032,6 +1051,47 @@
     </div>
 
     <div id="admin-content-screen" style="display:none;">
+      <button class="refresh" id="admin-add-project-toggle" type="button">Add project</button>
+      <div class="admin-form-card" id="admin-add-project-panel" style="display:none;">
+        <form id="admin-project-form">
+          <div class="admin-form-grid">
+            <div>
+              <label for="admin-service-select">Section</label>
+              <select id="admin-service-select" name="serviceId" required></select>
+            </div>
+            <div>
+              <label for="admin-project-name">Project name</label>
+              <input id="admin-project-name" name="projectName" type="text" required>
+            </div>
+            <div>
+              <label for="admin-project-owner">Owner / client</label>
+              <input id="admin-project-owner" name="owner" type="text" required>
+            </div>
+            <div>
+              <label for="admin-project-developer">Developer</label>
+              <input id="admin-project-developer" name="developer" type="text" value="Mughera Yasin">
+            </div>
+            <div class="full">
+              <label for="admin-project-desc">Description</label>
+              <textarea id="admin-project-desc" name="description" required></textarea>
+            </div>
+            <div>
+              <label for="admin-project-tags">Tags (comma separated)</label>
+              <input id="admin-project-tags" name="tags" type="text" placeholder="React, AI, SaaS">
+            </div>
+            <div>
+              <label for="admin-project-image">Image path</label>
+              <input id="admin-project-image" name="image" type="text" placeholder="img/example.png">
+            </div>
+            <div>
+              <label for="admin-project-url">Project URL</label>
+              <input id="admin-project-url" name="url" type="text" placeholder="https://example.com">
+            </div>
+          </div>
+          <button class="admin-form-submit" type="submit">Post project</button>
+          <p class="admin-form-status" id="admin-form-status"></p>
+        </form>
+      </div>
       <button class="refresh" id="admin-refresh-btn" type="button">Refresh</button>
       <div id="admin-table-holder"><p class="empty">Loading&hellip;</p></div>
     </div>
@@ -1049,7 +1109,8 @@ const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
    EDIT ME: your services + showcased projects.
    Swap "Project Title" / "Client Name" / "#" for real ones.
 ========================================================= */
-const SERVICES = [
+const SERVICES = (() => {
+  const defaultServices = [
   { id:"website-design", num:"01", label:"Website Design", plural:"Websites", intro:"Look at some of our websites",
     projects:[
       {name:"antonthnx.com", owner:"Antony Kent", developer:"Mughera Yasin",
@@ -1120,65 +1181,96 @@ const SERVICES = [
        tags:["Twilio","AI Voice","Node.js","SQLite"],
        img:"img/opex.png", url:"#"}
     ]}
-];
-
+  ];
+  try {
+    const saved = localStorage.getItem('nexvr-services');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not load saved services', err);
+  }
+  return defaultServices;
+})();
 
 /* ---------------- render showcase blocks ---------------- */
-const showcasesRoot = document.getElementById('showcases-root');
-showcasesRoot.innerHTML = SERVICES.map(s => {
-  const words = s.intro.split(' ').map((w,i) => `<span class="reveal-word"><span style="--d:${i*70}ms">${w}</span></span>`).join(' ');
-  const loopedProjects = s.projects.length > 1 ? [s.projects[s.projects.length - 1], ...s.projects, s.projects[0]] : s.projects;
-  const cardsHTML = loopedProjects.map((p,i) => {
-    const isClone = s.projects.length > 1 && (i === 0 || i === loopedProjects.length - 1);
-    const realIndex = isClone ? (i === 0 ? s.projects.length - 1 : 0) : i - 1;
-    return `
-      <article class="project-card" data-index="${realIndex}">
-        <div class="project-image">
-          ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<div class="project-placeholder"><strong>${p.placeholder || p.name}</strong></div>`}
-        </div>
-        <div class="project-info">
-          <div class="project-meta">
-            <p class="project-name">${p.name}</p>
-            <p class="project-owner">${p.owner === "Own product" || p.owner === "Own brand" ? "Own product — by Mughera Yasin" : p.owner === "Client wants to stay private" ? "Client wants to stay private — by Mughera Yasin" : "Client: " + p.owner + " — by Mughera Yasin"}</p>
+function renderShowcaseSections(){
+  const showcasesRoot = document.getElementById('showcases-root');
+  showcasesRoot.innerHTML = SERVICES.map(s => {
+    const words = s.intro.split(' ').map((w,i) => `<span class="reveal-word"><span style="--d:${i*70}ms">${w}</span></span>`).join(' ');
+    const shouldLoop = s.projects.length >= 3;
+    const loopedProjects = shouldLoop ? [s.projects[s.projects.length - 1], ...s.projects, s.projects[0]] : s.projects;
+    const cardsHTML = loopedProjects.map((p,i) => {
+      const isClone = shouldLoop && (i === 0 || i === loopedProjects.length - 1);
+      const realIndex = isClone ? (i === 0 ? s.projects.length - 1 : 0) : (shouldLoop ? i - 1 : i);
+      return `
+        <article class="project-card" data-index="${realIndex}">
+          <div class="project-image">
+            ${p.img ? `<img src="${p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<div class="project-placeholder"><strong>${p.placeholder || p.name}</strong></div>`}
           </div>
-          <div class="project-actions">
-            <button class="btn" type="button" data-open-modal data-target="project-developer" data-service="${s.label}" data-project="${p.name}" data-developer="${p.developer}">Contact developer</button>
-            <button class="btn solid" type="button" data-open-project data-service="${s.label}" data-index="${realIndex}" data-sid="${s.id}">See project</button>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join('');
-  const marqueeCards = `${cardsHTML}${cardsHTML}`;
-  return `
-    <div class="showcase-section" data-showcase-section="${s.id}">
-      <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
-        <h2>${words}</h2>
-      </section>
-      <div class="stack-wrapper">
-        <div class="stack-sticky">
-          <div class="project-strip-shell">
-            <div class="project-strip-nav" aria-hidden="true">
-              <button class="project-strip-arrow" type="button" tabindex="-1">←</button>
-              <button class="project-strip-arrow" type="button" tabindex="-1">→</button>
+          <div class="project-info">
+            <div class="project-meta">
+              <p class="project-name">${p.name}</p>
+              <p class="project-owner">${p.owner === "Own product" || p.owner === "Own brand" ? "Own product — by Mughera Yasin" : p.owner === "Client wants to stay private" ? "Client wants to stay private — by Mughera Yasin" : "Client: " + p.owner + " — by Mughera Yasin"}</p>
             </div>
-            <div class="project-strip">
-              <div class="project-strip-track">
-                ${marqueeCards}
+            <div class="project-actions">
+              <button class="btn" type="button" data-open-modal data-target="project-developer" data-service="${s.label}" data-project="${p.name}" data-developer="${p.developer}">Contact developer</button>
+              <button class="btn solid" type="button" data-open-project data-service="${s.label}" data-index="${realIndex}" data-sid="${s.id}">See project</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+    const marqueeCards = shouldLoop ? `${cardsHTML}${cardsHTML}` : cardsHTML;
+    return `
+      <div class="showcase-section" data-showcase-section="${s.id}">
+        <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
+          <h2>${words}</h2>
+        </section>
+        <div class="stack-wrapper">
+          <div class="stack-sticky">
+            <div class="project-strip-shell">
+              <div class="project-strip-nav" aria-hidden="true">
+                <button class="project-strip-arrow" type="button" tabindex="-1">←</button>
+                <button class="project-strip-arrow" type="button" tabindex="-1">→</button>
+              </div>
+              <div class="project-strip ${shouldLoop ? '' : 'is-static'}">
+                <div class="project-strip-track">
+                  ${marqueeCards}
+                </div>
               </div>
             </div>
+            <div class="project-swipe-hint">Swipe sideways to browse the projects</div>
           </div>
-          <div class="project-swipe-hint">Swipe sideways to browse the projects</div>
         </div>
+        <section class="service-cta-section">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+            <button class="service-cta-btn" type="button" data-open-modal data-target="developer" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
+          </div>
+        </section>
       </div>
-      <section class="service-cta-section">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
-          <button class="service-cta-btn" type="button" data-open-modal data-target="developer" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
-        </div>
-      </section>
-    </div>
-  `;
-}).join('');
+    `;
+  }).join('');
+
+  const servicesListEl = document.getElementById('services-list');
+  servicesListEl.innerHTML = SERVICES.map(s => `
+    <a class="service-item" id="service-${s.id}" href="#showcase-${s.id}">
+      <div class="service-num">${s.num}</div>
+      <div class="service-label">${s.label}</div>
+    </a>
+  `).join('');
+
+  const menuProjectsListEl = document.getElementById('menu-projects-list');
+  menuProjectsListEl.innerHTML = SERVICES.map(s =>
+    `<a href="#showcase-${s.id}"><span class="menu-num">${s.num}</span>Previous ${s.plural}</a>`
+  ).join('');
+
+  requestAnimationFrame(() => initShowcaseStrips());
+}
+renderShowcaseSections();
 
 /* ---------------- particle background ---------------- */
 const canvas = document.getElementById('particle-canvas');
@@ -1251,19 +1343,6 @@ animateSwirl();
 
 /* ---------------- stack wrappers ---------------- */
 const stackWrappers = Array.from(document.querySelectorAll('.stack-wrapper'));
-
-/* ---------------- render services list + menu projects list ---------------- */
-const servicesListEl = document.getElementById('services-list');
-servicesListEl.innerHTML = SERVICES.map(s => `
-  <a class="service-item" id="service-${s.id}" href="#showcase-${s.id}">
-    <div class="service-num">${s.num}</div>
-    <div class="service-label">${s.label}</div>
-  </a>
-`).join('');
-
-document.getElementById('menu-projects-list').innerHTML = SERVICES.map(s =>
-  `<a href="#showcase-${s.id}"><span class="menu-num">${s.num}</span>Previous ${s.plural}</a>`
-).join('');
 
 /* ---------------- topbar ---------------- */
 const topbar = document.getElementById('topbar');
@@ -1505,6 +1584,10 @@ function initShowcaseStrips(){
   document.querySelectorAll('.project-strip').forEach(strip => {
     const track = strip.querySelector('.project-strip-track');
     if(!track) return;
+    if(strip.classList.contains('is-static')){
+      track.style.animation = 'none';
+      return;
+    }
     const cardCount = track.children.length;
     track.style.animationDuration = `${Math.max(18, cardCount * 1.4)}s`;
   });
@@ -1512,6 +1595,68 @@ function initShowcaseStrips(){
 initShowcaseStrips();
 window.addEventListener('load', initShowcaseStrips);
 window.addEventListener('resize', initShowcaseStrips);
+
+const adminAddProjectToggle = document.getElementById('admin-add-project-toggle');
+const adminAddProjectPanel = document.getElementById('admin-add-project-panel');
+const adminProjectForm = document.getElementById('admin-project-form');
+const adminProjectStatus = document.getElementById('admin-form-status');
+const adminServiceSelect = document.getElementById('admin-service-select');
+
+function populateAdminServiceSelect(){
+  if(!adminServiceSelect) return;
+  adminServiceSelect.innerHTML = SERVICES.map(service => `<option value="${service.id}">${service.label}</option>`).join('');
+}
+populateAdminServiceSelect();
+
+if(adminAddProjectToggle && adminAddProjectPanel){
+  adminAddProjectToggle.addEventListener('click', () => {
+    const isOpen = adminAddProjectPanel.style.display !== 'block';
+    adminAddProjectPanel.style.display = isOpen ? 'block' : 'none';
+  });
+}
+
+if(adminProjectForm){
+  adminProjectForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = new FormData(adminProjectForm);
+    const serviceId = data.get('serviceId')?.toString().trim();
+    const projectName = data.get('projectName')?.toString().trim();
+    const owner = data.get('owner')?.toString().trim();
+    const developer = data.get('developer')?.toString().trim() || 'Mughera Yasin';
+    const description = data.get('description')?.toString().trim();
+    const tags = data.get('tags')?.toString().split(',').map(tag => tag.trim()).filter(Boolean) || [];
+    const image = data.get('image')?.toString().trim();
+    const url = data.get('url')?.toString().trim() || '#';
+
+    if(!serviceId || !projectName || !owner || !description){
+      if(adminProjectStatus) adminProjectStatus.textContent = 'Please fill the required fields.';
+      return;
+    }
+
+    const service = SERVICES.find(item => item.id === serviceId);
+    if(!service){
+      if(adminProjectStatus) adminProjectStatus.textContent = 'That section could not be found.';
+      return;
+    }
+
+    service.projects.push({
+      name: projectName,
+      owner,
+      developer,
+      desc: description,
+      tags,
+      img: image,
+      url
+    });
+
+    localStorage.setItem('nexvr-services', JSON.stringify(SERVICES));
+    renderShowcaseSections();
+    populateAdminServiceSelect();
+    adminProjectForm.reset();
+    adminProjectForm.querySelector('input[name="developer"]').value = 'Mughera Yasin';
+    if(adminProjectStatus) adminProjectStatus.textContent = `Added “${projectName}” to ${service.label}.`;
+  });
+}
 
 function closeProjectOverlay(){
   projectOverlay.classList.remove('open');
