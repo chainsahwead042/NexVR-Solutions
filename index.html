@@ -330,17 +330,18 @@
   }
   .services-nav-hint{
     position:relative;z-index:1;
-    margin:0 0 56px;
-    font-size:0.95rem;
-    font-weight:700;
-    letter-spacing:0.14em;
+    margin:0 0 46px;
+    font-size:0.78rem;
+    font-weight:800;
+    letter-spacing:0.28em;
     text-transform:uppercase;
     color:var(--accent);
-    animation:pulseHint 2.2s ease-in-out infinite;
+    text-shadow:0 0 16px rgba(200,146,42,0.22);
+    animation:pulseHint 2s ease-in-out infinite;
   }
   @keyframes pulseHint {
-    0%, 100% { opacity:0.8; transform:translateY(0); }
-    50% { opacity:1; transform:translateY(-3px); }
+    0%, 100% { opacity:0.82; transform:translateY(0); }
+    50% { opacity:1; transform:translateY(-2px); }
   }
   .services-list{
     position:relative;z-index:1;
@@ -1102,7 +1103,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
     <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
       <h2>${words}</h2>
     </section>
-    <div class="stack-wrapper" style="height:${s.projects.length * 100}vh;">
+    <div class="stack-wrapper" style="height:${Math.max(140, s.projects.length * 120)}vh;">
       <div class="stack-sticky">
         ${cardsHTML}
       </div>
@@ -1326,7 +1327,8 @@ function onScroll(){
     const prog = scrollable > 0 ? clamp((sy - c.top) / scrollable, 0, 1) : 0;
     const n = c.cards.length;
     const safeProg = Math.max(0, Math.min(1, prog));
-    const activeIndex = Math.min(Math.round(safeProg * (n - 1)), n - 1);
+    const easedProg = Math.pow(safeProg, 1.2);
+    const activeIndex = Math.min(Math.round(easedProg * (n - 1)), n - 1);
     c.cards.forEach((card, i) => {
       const isActive = i === activeIndex;
       card.style.opacity = isActive ? '1' : '0';
