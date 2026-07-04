@@ -325,8 +325,22 @@
     font-weight:600;
     font-size:clamp(1.8rem,4.4vw,3.4rem);
     max-width:760px;
-    margin:0 0 90px;
+    margin:0 0 18px;
     line-height:1.15;
+  }
+  .services-nav-hint{
+    position:relative;z-index:1;
+    margin:0 0 56px;
+    font-size:0.95rem;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    animation:pulseHint 2.2s ease-in-out infinite;
+  }
+  @keyframes pulseHint {
+    0%, 100% { opacity:0.8; transform:translateY(0); }
+    50% { opacity:1; transform:translateY(-3px); }
   }
   .services-list{
     position:relative;z-index:1;
@@ -837,6 +851,7 @@
     </svg>
     <div class="section-kicker">What we do</div>
     <h2 class="services-title">Six disciplines, one team. Each one built to compound the others.</h2>
+    <p class="services-nav-hint">Click to navigate to the respective section</p>
     <div class="services-list" id="services-list"><!-- filled by JS --></div>
   </section>
 
@@ -1018,7 +1033,7 @@ const SERVICES = [
        desc:"React AI lead hunter for freelancers. Scans platforms for leads, drafts AI-personalised outreach, smart attachment flow. Dark mode, neon yellow accents.",
        tags:["React","AI","Lead Gen","Dark Mode","SaaS"],
        img:"img/neolanse.png", url:"#"},
-      {name:"LanceIt", owner:"Own product", developer:"Mughera Yasin",
+      {name:"LanceIt", owner:"Client wants to stay private", developer:"Mughera Yasin",
        desc:"YouTube creator lead gen tool — finds channels in your niche, drafts personalised outreach via Claude API, sends through Gmail OAuth. Node.js backend, SQLite, freemium via Freemius.",
        tags:["Node.js","YouTube API","Gmail OAuth","Claude API","SQLite"],
        img:"", placeholder:"Client did not approve because it was his private application.", url:"#"},
@@ -1074,7 +1089,7 @@ showcasesRoot.innerHTML = SERVICES.map(s => {
       <div class="project-info">
         <div class="project-meta">
           <p class="project-name">${p.name}</p>
-          <p class="project-owner">${p.owner === "Own product" || p.owner === "Own brand" ? "Own product — by Mughera Yasin" : "Client: " + p.owner + " — by Mughera Yasin"}</p>
+          <p class="project-owner">${p.owner === "Own product" || p.owner === "Own brand" ? "Own product — by Mughera Yasin" : p.owner === "Client wants to stay private" ? "Client wants to stay private — by Mughera Yasin" : "Client: " + p.owner + " — by Mughera Yasin"}</p>
         </div>
         <div class="project-actions">
           <button class="btn" type="button" data-open-modal data-target="project-developer" data-service="${s.label}" data-project="${p.name}" data-developer="${p.developer}">Contact developer</button>
@@ -1310,7 +1325,8 @@ function onScroll(){
     const scrollable = c.height - vh;
     const prog = scrollable > 0 ? clamp((sy - c.top) / scrollable, 0, 1) : 0;
     const n = c.cards.length;
-    const activeIndex = Math.min(Math.floor(prog * (n - 1) + 0.2), n - 1);
+    const safeProg = Math.max(0, Math.min(1, prog));
+    const activeIndex = Math.min(Math.round(safeProg * (n - 1)), n - 1);
     c.cards.forEach((card, i) => {
       const isActive = i === activeIndex;
       card.style.opacity = isActive ? '1' : '0';
