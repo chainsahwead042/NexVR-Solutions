@@ -875,11 +875,6 @@
 
 <nav class="topbar" id="topbar">
   <div class="topbar-logo"><span class="topbar-logo-mark"></span>NEX<span>VR</span></div>
-  <div class="topbar-links" id="topbar-links">
-    <a href="#services">Services</a>
-    <a href="#showcase-website-design">Past Projects</a>
-    <a href="#showcase-marketing-automation">Contact</a>
-  </div>
   <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
@@ -1225,7 +1220,7 @@ function renderShowcaseSections(){
   const showcasesRoot = document.getElementById('showcases-root');
   showcasesRoot.innerHTML = SERVICES.map(s => {
     const words = s.intro.split(' ').map((w,i) => `<span class="reveal-word"><span style="--d:${i*70}ms">${w}</span></span>`).join(' ');
-    const shouldLoop = s.projects.length >= 3;
+    const shouldLoop = s.projects.length >= 3 || s.id === 'marketing-automation';
     const loopedProjects = shouldLoop ? [s.projects[s.projects.length - 1], ...s.projects, s.projects[0]] : s.projects;
     const cardsHTML = loopedProjects.map((p,i) => {
       const isClone = shouldLoop && (i === 0 || i === loopedProjects.length - 1);
