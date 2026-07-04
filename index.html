@@ -468,14 +468,10 @@
     gap:24px;
     width:max-content;
     will-change:transform;
+    animation:showcase-marquee 24s linear infinite;
   }
   .project-strip:hover .project-strip-track{
     animation-play-state:paused;
-  }
-  @media (max-width: 900px){
-    .project-strip-track{
-      animation:showcase-marquee 24s linear infinite;
-    }
   }
   @keyframes showcase-marquee{
     from{transform:translateX(0);} 
