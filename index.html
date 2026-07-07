@@ -912,7 +912,7 @@
         <button type="button" data-open-modal data-target="owner">Contact website owner</button>
       </div>
     </div>
-    <button class="topbar-cta" type="button" data-open-modal data-target="developer">Get our services</button>
+    <button class="topbar-cta" type="button" data-open-modal data-target="owner">Get our services</button>
   </div>
   <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span><span></span>
@@ -946,7 +946,7 @@
     </div>
 
     <div style="padding:24px 4px 8px;">
-      <button class="topbar-cta" style="width:100%;border-radius:6px;padding:15px;font-size:13px;" type="button" data-open-modal data-target="developer">Get our services</button>
+      <button class="topbar-cta" style="width:100%;border-radius:6px;padding:15px;font-size:13px;" type="button" data-open-modal data-target="owner">Get our services</button>
     </div>
 
   </div>
@@ -1034,11 +1034,11 @@
     <p class="project-overlay-service" id="po-service"></p>
     <h2 class="project-overlay-title" id="po-title"></h2>
     <p class="project-overlay-owner" id="po-owner"></p>
-    <div class="project-overlay-image" id="po-image-box"><a class="project-overlay-image-link" id="po-image-link" href="#" target="_blank" rel="noopener">Open project</a></div>
+    
     <p class="project-overlay-desc" id="po-desc"></p>
     <div class="project-overlay-tags" id="po-tags"></div>
     <div class="project-overlay-actions">
-      <a class="project-overlay-link" id="po-link" href="#" target="_blank" rel="noopener">Visit project ↗</a>
+      <a class="project-overlay-link" id="po-link" href="#" target="_blank" rel="noopener">Visit Website ↗</a>
       <button class="project-overlay-contact" type="button" id="po-contact">Get in touch</button>
     </div>
   </div>
@@ -1057,8 +1057,8 @@
       <div class="field" id="modal-target-field">
         <label for="m-target">I want to contact</label>
         <select id="m-target" name="contactTarget">
-          <option value="developer">Web developer (NEXVR)</option>
           <option value="owner">Website owner</option>
+          <option value="developer">Web developer (Mughera Yasin)</option>
         </select>
       </div>
       <div class="field">
@@ -1287,12 +1287,13 @@ function renderShowcaseSections(){
       `;
     }).join('');
     const marqueeCards = shouldLoop ? `${cardsHTML}${cardsHTML}` : cardsHTML;
+    if(!hasProjects) return ''; // nothing to show for this service yet — no empty section, no stray button
     return `
       <div class="showcase-section" data-showcase-section="${s.id}">
         <section class="showcase-intro" id="showcase-${s.id}" data-service="${s.id}">
-          ${hasProjects ? `<h2>${words}</h2>` : ''}
+          <h2>${words}</h2>
         </section>
-        <div class="stack-wrapper" style="${hasProjects ? '' : 'display:none;'}">
+        <div class="stack-wrapper">
           <div class="stack-sticky">
             <div class="project-strip-shell">
               <div class="project-strip-nav" aria-hidden="true">
@@ -1310,7 +1311,7 @@ function renderShowcaseSections(){
         </div>
         <section class="service-cta-section">
           <div style="display:flex;flex-direction:column;align-items:center;gap:18px;">
-            <button class="service-cta-btn" type="button" data-open-modal data-target="developer" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
+            <button class="service-cta-btn" type="button" data-open-modal data-target="owner" data-service="${s.label}" data-project="Get started for free">Get started for free</button>
           </div>
         </section>
       </div>
@@ -1643,28 +1644,28 @@ document.addEventListener('click', e => {
   document.getElementById('po-desc').textContent = p.desc;
   document.getElementById('po-tags').innerHTML = (p.tags||[]).map(t=>`<span>${t}</span>`).join('');
   const link = document.getElementById('po-link');
-  const mediaLink = document.getElementById('po-image-link');
   const hasLink = Boolean(p.url && p.url !== '#');
   const isBlocked = p.name === 'LanceIt' || p.owner === 'Client wants to stay private';
-  if(hasLink && !isBlocked){
-    mediaLink.href = p.url;
-    mediaLink.textContent = 'Open project ↗';
-    mediaLink.style.display = '';
-  } else {
-    mediaLink.removeAttribute('href');
-    mediaLink.textContent = isBlocked ? 'Blocked' : 'No public link';
-    mediaLink.style.display = '';
-  }
   link.href = hasLink && !isBlocked ? p.url : '#';
-  link.textContent = hasLink && !isBlocked ? 'Visit project ↗' : 'Blocked';
+  link.textContent = hasLink && !isBlocked ? 'Visit Website ↗' : (isBlocked ? 'Blocked' : 'No public link');
   link.style.display = '';
   document.getElementById('po-contact').onclick = () => {
     closeProjectOverlay();
     openModal('project-developer', service.label, p.name, p.developer);
   };
 
+  openProjectOverlay();
+});
+
+/* Opening a project pushes a history entry, so the browser's own
+   Back button closes the overlay — just like leaving a real page. */
+function openProjectOverlay(){
+  history.pushState({ nexvrOverlay: 'project' }, '', location.href);
   projectOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+window.addEventListener('popstate', () => {
+  if(projectOverlay.classList.contains('open')) closeProjectOverlay();
 });
 
 const stripCleanups = [];
@@ -1811,7 +1812,9 @@ function closeProjectOverlay(){
   projectOverlay.classList.remove('open');
   document.body.style.overflow = '';
 }
-document.getElementById('project-overlay-back').addEventListener('click', closeProjectOverlay);
+document.getElementById('project-overlay-back').addEventListener('click', () => {
+  if(projectOverlay.classList.contains('open')) history.back();
+});
 
 /* ---------------- legal modal (Privacy / Terms / Cookies) ----------------
    EDIT ME: swap this placeholder copy for your real policies whenever you
@@ -1899,7 +1902,7 @@ function openModal(target, service, project, developer){
   } else {
     // General contact — let the person choose who they mean to reach.
     developerField.value = '';
-    targetSelect.value = target || 'developer';
+    targetSelect.value = target || 'owner';
     modalSub.textContent = "Tell us a bit about what you need.";
     contextField.style.display = 'none';
     targetField.style.display = '';
