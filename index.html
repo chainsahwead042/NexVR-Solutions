@@ -151,10 +151,6 @@
   }
   .topbar-dropdown-panel a:hover,
   .topbar-dropdown-panel button:hover{background:rgba(200,146,42,0.1);color:var(--white);}
-  @media (min-width: 901px){
-    .topbar-links{display:flex;}
-    .menu-toggle{display:none;}
-  }
   /* hamburger toggle */
   .menu-toggle{
     width:38px;height:38px;flex:0 0 auto;
@@ -170,6 +166,10 @@
   .menu-toggle.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
   .menu-toggle.open span:nth-child(2){opacity:0;}
   .menu-toggle.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+  @media (min-width: 901px){
+    .topbar-links{display:flex;}
+    .menu-toggle{display:none;}
+  }
 
   .topbar-cta{
     font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
@@ -1016,15 +1016,14 @@
         <a href="javascript:void(0)" data-open-modal data-target="developer">Get a free quote</a>
         <a href="javascript:void(0)" data-open-modal data-target="owner">Contact a project owner</a>
       </div>
-      <button class="service-cta-btn" style="font-size:12px;padding:14px 28px;" type="button" data-open-modal data-target="developer">Get started for free</button>
     </div>
   </div>
   <div class="footer-bottom">
     <span>© <span id="year"></span> NEXVR Agency. All rights reserved.</span>
     <div style="display:flex;gap:20px;">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Cookie Policy</a>
+      <a href="javascript:void(0)" data-open-legal="privacy">Privacy Policy</a>
+      <a href="javascript:void(0)" data-open-legal="terms">Terms of Service</a>
+      <a href="javascript:void(0)" data-open-legal="cookies">Cookie Policy</a>
     </div>
   </div>
 </footer>
@@ -1083,12 +1082,21 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="legal-overlay">
+  <div class="modal" style="max-width:560px;max-height:80vh;overflow-y:auto;">
+    <button class="modal-close" type="button" id="legal-close" aria-label="Close">&times;</button>
+    <h3 id="legal-title">Privacy Policy</h3>
+    <p class="modal-sub" id="legal-updated"></p>
+    <div id="legal-body" style="font-size:14px;line-height:1.7;color:#ccc;"></div>
+  </div>
+</div>
+
 </div><!-- /#site-root -->
 
 <div class="cookie-bar" id="cookie-bar">
   <p>
     We use cookies and tracking pixels to understand how visitors use this site and to show relevant ads.
-    See our <a href="#">Cookie Policy</a> for details.
+    See our <a href="javascript:void(0)" data-open-legal="cookies">Cookie Policy</a> for details.
   </p>
   <div class="cookie-actions">
     <button class="cookie-btn decline" id="cookie-decline" type="button">Decline</button>
@@ -1421,6 +1429,18 @@ function closeMenuPanel(){
   menuToggle.setAttribute('aria-expanded','false');
   menuPanel.classList.remove('open');
   menuSections.forEach(sec => sec.classList.remove('open'));
+}
+function closeTopbarMenus(){
+  document.querySelectorAll('.topbar-dropdown-panel').forEach(panel => {
+    panel.style.maxHeight = '0';
+    panel.style.opacity = '0';
+  });
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.topbar-dropdown-panel').forEach(panel => {
+      panel.style.maxHeight = '';
+      panel.style.opacity = '';
+    });
+  });
 }
 menuToggle.addEventListener('click', () => {
   const isOpen = menuPanel.classList.toggle('open');
@@ -1792,6 +1812,63 @@ function closeProjectOverlay(){
   document.body.style.overflow = '';
 }
 document.getElementById('project-overlay-back').addEventListener('click', closeProjectOverlay);
+
+/* ---------------- legal modal (Privacy / Terms / Cookies) ----------------
+   EDIT ME: swap this placeholder copy for your real policies whenever you
+   have them ready — this just makes the footer links actually open something. */
+const LEGAL_CONTENT = {
+  privacy: {
+    title: "Privacy Policy",
+    body: `<p>We collect only the information you choose to give us, like your name, email
+    and message, when you use a contact form on this site.</p>
+    <p>We use that information to reply to you and to keep track of project requests. We do
+    not sell your personal information to anyone.</p>
+    <p>If you have accepted cookies, we also use analytics tools to understand how visitors
+    use the site, so we can keep improving it.</p>`
+  },
+  terms: {
+    title: "Terms of Service",
+    body: `<p>By using this website, you agree to use it fairly and not to misuse any of the
+    forms, tools or content on it.</p>
+    <p>All project names, screenshots and descriptions shown here belong to NEXVR Agency or
+    the named client, and are shown for portfolio purposes.</p>
+    <p>We may update these terms from time to time; continuing to use the site means you
+    accept the latest version.</p>`
+  },
+  cookies: {
+    title: "Cookie Policy",
+    body: `<p>This site uses cookies to remember your preferences and, if you accept them, to
+    understand how visitors use the site through analytics and ad tracking.</p>
+    <p>You can accept or decline non-essential cookies from the banner at the bottom of the
+    page. You can change your choice at any time by clearing your browser's site data.</p>`
+  }
+};
+
+const legalOverlay = document.getElementById('legal-overlay');
+const legalTitle = document.getElementById('legal-title');
+const legalBody = document.getElementById('legal-body');
+const legalUpdated = document.getElementById('legal-updated');
+
+function openLegal(key){
+  const entry = LEGAL_CONTENT[key];
+  if(!entry) return;
+  legalTitle.textContent = entry.title;
+  legalBody.innerHTML = entry.body;
+  legalUpdated.textContent = "Last updated: " + new Date().getFullYear();
+  legalOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLegal(){
+  legalOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('click', e => {
+  const trigger = e.target.closest('[data-open-legal]');
+  if(trigger){ openLegal(trigger.dataset.openLegal); }
+});
+document.getElementById('legal-close').addEventListener('click', closeLegal);
+legalOverlay.addEventListener('click', e => { if(e.target === legalOverlay) closeLegal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLegal(); });
 
 /* ---------------- modal ---------------- */
 const overlay = document.getElementById('modal-overlay');
