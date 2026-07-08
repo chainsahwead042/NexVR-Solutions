@@ -820,6 +820,38 @@
   }
   .modal-submit:disabled{opacity:0.6;cursor:default;}
   .modal-status{margin-top:14px;font-size:13px;color:var(--grey);min-height:18px;}
+
+  /* ---------- jotform (typeform-style) ---------- */
+  .modal--form{max-width:640px;padding:34px 0 0;}
+  .modal--form h3,.modal--form p.modal-sub{padding:0 34px;}
+  .modal--form #modal-context-field{padding:0 34px;}
+  .jotform-wrap{
+    position:relative;
+    margin-top:18px;
+    border-top:1px solid var(--line);
+    border-radius:0 0 6px 6px;
+    overflow:hidden;
+    background:#000;
+  }
+  .jotform-iframe{
+    display:block;width:100%;border:none;
+    min-height:539px;
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  .jotform-iframe.loaded{opacity:1;}
+  .jotform-loading{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    color:var(--grey);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    background:#000;
+  }
+  .jotform-spinner{
+    width:26px;height:26px;border-radius:50%;
+    border:2px solid var(--line);border-top-color:var(--accent);
+    animation:jotform-spin .8s linear infinite;
+  }
+  @keyframes jotform-spin{to{transform:rotate(360deg);}}
   .modal-close{
     position:absolute;top:18px;right:18px;
     background:none;border:none;color:var(--grey);font-size:20px;line-height:1;
@@ -1111,40 +1143,31 @@
 </div>
 
 <div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
+  <div class="modal modal--form">
     <button class="modal-close" type="button" id="modal-close" aria-label="Close">&times;</button>
     <h3>Let's talk</h3>
     <p class="modal-sub" id="modal-sub">Tell us a bit about what you need.</p>
-    <form id="contact-form">
-      <div class="field" id="modal-context-field" style="display:none;">
-        <label>Contacting</label>
-        <div class="modal-context" id="modal-context"></div>
+    <div class="field" id="modal-context-field" style="display:none;">
+      <label>Contacting</label>
+      <div class="modal-context" id="modal-context"></div>
+    </div>
+    <div class="jotform-wrap">
+      <div class="jotform-loading" id="jotform-loading">
+        <span class="jotform-spinner"></span>
+        Loading form…
       </div>
-      <div class="field" id="modal-target-field">
-        <label for="m-target">I want to contact</label>
-        <select id="m-target" name="contactTarget">
-          <option value="owner">Website owner</option>
-          <option value="developer">Web developer (Mughera Yasin)</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="m-name">Name</label>
-        <input id="m-name" name="name" type="text" required>
-      </div>
-      <div class="field">
-        <label for="m-email">Email</label>
-        <input id="m-email" name="email" type="email" required>
-      </div>
-      <div class="field">
-        <label for="m-message">Message</label>
-        <textarea id="m-message" name="message" required></textarea>
-      </div>
-      <input type="hidden" id="m-service" name="service">
-      <input type="hidden" id="m-project" name="project">
-      <input type="hidden" id="m-developer" name="developer">
-      <button class="modal-submit" type="submit" id="modal-submit">Send</button>
-      <p class="modal-status" id="modal-status"></p>
-    </form>
+      <iframe
+        id="JotFormIFrame-261884054965065"
+        title="Strategy Call Request Form"
+        class="jotform-iframe"
+        allowtransparency="true"
+        allow="geolocation; microphone; camera; fullscreen; payment"
+        src="about:blank"
+        data-src="https://form.jotform.com/261884054965065"
+        frameborder="0"
+        scrolling="no"
+      ></iframe>
+    </div>
   </div>
 </div>
 
@@ -2022,40 +2045,30 @@ document.getElementById('legal-close').addEventListener('click', closeLegal);
 legalOverlay.addEventListener('click', e => { if(e.target === legalOverlay) closeLegal(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLegal(); });
 
-/* ---------------- modal ---------------- */
+/* ---------------- modal (JotForm) ---------------- */
 const overlay = document.getElementById('modal-overlay');
-const form = document.getElementById('contact-form');
 const modalSub = document.getElementById('modal-sub');
 const contextField = document.getElementById('modal-context-field');
 const contextEl = document.getElementById('modal-context');
-const targetField = document.getElementById('modal-target-field');
-const targetSelect = document.getElementById('m-target');
-const serviceField = document.getElementById('m-service');
-const projectField = document.getElementById('m-project');
-const developerField = document.getElementById('m-developer');
-const statusEl = document.getElementById('modal-status');
-const submitBtn = document.getElementById('modal-submit');
+const jotformFrame = document.getElementById('JotFormIFrame-261884054965065');
+const jotformLoading = document.getElementById('jotform-loading');
 
 function openModal(target, service, project, developer){
-  serviceField.value = service || '';
-  projectField.value = project || '';
-  statusEl.textContent = '';
-
   if(target === 'project-developer'){
-    // Contacting the developer of one specific showcased project — no picker needed.
-    developerField.value = developer || '';
+    // Contacting the developer of one specific showcased project.
     modalSub.textContent = `Send a message about ${project}.`;
     contextEl.innerHTML = `<strong>${developer || 'Project developer'}</strong> — developer of ${project}`;
     contextField.style.display = '';
-    targetField.style.display = 'none';
   } else {
-    // General contact — let the person choose who they mean to reach.
-    developerField.value = '';
-    targetSelect.value = target || 'owner';
     modalSub.textContent = "Tell us a bit about what you need.";
     contextField.style.display = 'none';
-    targetField.style.display = '';
   }
+
+  // Lazy-load the JotForm only when the modal is actually opened,
+  // and reload it fresh each time so the loading state feels intentional.
+  jotformFrame.classList.remove('loaded');
+  jotformLoading.style.display = 'flex';
+  jotformFrame.src = jotformFrame.dataset.src;
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -2075,42 +2088,11 @@ document.getElementById('modal-close').addEventListener('click', closeModal);
 overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Sending…';
-  statusEl.textContent = '';
-
-  const isProjectMode = contextField.style.display !== 'none';
-  const payload = {
-    contactTarget: isProjectMode ? 'project-developer' : targetSelect.value,
-    developer: developerField.value,
-    name: document.getElementById('m-name').value,
-    email: document.getElementById('m-email').value,
-    message: document.getElementById('m-message').value,
-    service: serviceField.value,
-    project: projectField.value,
-    timestamp: new Date().toISOString()
-  };
-
-  try{
-    if(APPS_SCRIPT_URL.includes('PASTE_YOUR')){
-      throw new Error('not configured');
-    }
-    await fetch(APPS_SCRIPT_URL, {
-      method:'POST',
-      headers:{ 'Content-Type':'text/plain;charset=utf-8' }, // avoids CORS preflight on Apps Script
-      body: JSON.stringify(payload)
-    });
-    statusEl.textContent = 'Message sent. We will get back to you soon.';
-    form.reset();
-    setTimeout(closeModal, 1700);
-  }catch(err){
-    statusEl.textContent = 'Could not send right now — please try again, or set up the Apps Script URL (see apps-script.gs).';
-  }finally{
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Send';
-  }
+jotformFrame.addEventListener('load', () => {
+  if(jotformFrame.src === 'about:blank') return;
+  jotformLoading.style.display = 'none';
+  jotformFrame.classList.add('loaded');
+  window.scrollTo(0,0);
 });
 
 /* =========================================================
@@ -2213,6 +2195,10 @@ function formatAdminDate(v){
 function escapeAdminHTML(s){
   return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+</script>
+<script src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
+<script>
+  window.jotformEmbedHandler("iframe[id='JotFormIFrame-261884054965065']", "https://form.jotform.com/");
 </script>
 </body>
 </html>
