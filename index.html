@@ -976,12 +976,6 @@
   #admin-page .back-link:hover{color:var(--accent);}
   @media (max-width:700px){#admin-page .admin-form-grid{grid-template-columns:1fr;}}
 </style>
-
-<!-- Vercel Web Analytics -->
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -1168,8 +1162,7 @@
         class="jotform-iframe"
         allowtransparency="true"
         allow="geolocation; microphone; camera; fullscreen; payment"
-        src="about:blank"
-        data-src="https://form.jotform.com/261884054965065"
+        src="https://form.jotform.com/261884054965065"
         frameborder="0"
         scrolling="no"
       ></iframe>
@@ -2070,11 +2063,17 @@ function openModal(target, service, project, developer){
     contextField.style.display = 'none';
   }
 
-  // Lazy-load the JotForm only when the modal is actually opened,
-  // and reload it fresh each time so the loading state feels intentional.
-  jotformFrame.classList.remove('loaded');
-  jotformLoading.style.display = 'flex';
-  jotformFrame.src = jotformFrame.dataset.src;
+  // Only show the spinner if the form hasn't already finished loading
+  // (it starts loading in the background as soon as the page opens).
+  if(!jotformFrame.classList.contains('loaded')){
+    jotformLoading.style.display = 'flex';
+    // Safety net: some browsers won't re-fire 'load' reliably, so never
+    // let the spinner get stuck — reveal the form after 4s regardless.
+    setTimeout(() => {
+      jotformLoading.style.display = 'none';
+      jotformFrame.classList.add('loaded');
+    }, 4000);
+  }
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -2095,7 +2094,6 @@ overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); 
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
 jotformFrame.addEventListener('load', () => {
-  if(jotformFrame.src === 'about:blank') return;
   jotformLoading.style.display = 'none';
   jotformFrame.classList.add('loaded');
   window.scrollTo(0,0);
