@@ -2202,7 +2202,11 @@ function escapeAdminHTML(s){
 </script>
 <script src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
 <script>
-  window.jotformEmbedHandler("iframe[id='JotFormIFrame-261884054965065']", "https://form.jotform.com/");
+  window.addEventListener('load', function(){
+    if(typeof window.jotformEmbedHandler === 'function'){
+      window.jotformEmbedHandler("iframe[id='JotFormIFrame-261884054965065']", "https://form.jotform.com/");
+    }
+  });
 </script>
 </body>
 </html>
