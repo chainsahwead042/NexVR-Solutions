@@ -1,0 +1,24 @@
+{
+  "name": "nexvr-solutions",
+  "version": "1.0.0",
+  "description": "NexVR Solutions - Automations, Chatbots, Voice Agents, Web & App Development",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "echo \"No tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chainsahwead042/NexVR-Solutions.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chainsahwead042/NexVR-Solutions/issues"
+  },
+  "homepage": "https://github.com/chainsahwead042/NexVR-Solutions#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
