@@ -784,6 +784,7 @@
     opacity:0;visibility:hidden;
     transition:opacity .3s ease, visibility .3s;
     padding:20px;
+    overflow-y:auto;
   }
   .modal-overlay.open{opacity:1;visibility:visible;}
   .modal{
@@ -823,6 +824,8 @@
 
   /* ---------- jotform (typeform-style) ---------- */
   .modal--form{max-width:640px;padding:34px 0 0;}
+  max-height:88vh;
+overflow-y:auto;
   .modal--form h3,.modal--form p.modal-sub{padding:0 34px;}
   .modal--form #modal-context-field{padding:0 34px;}
   .jotform-wrap{
@@ -830,7 +833,7 @@
     margin-top:18px;
     border-top:1px solid var(--line);
     border-radius:0 0 6px 6px;
-    overflow:hidden;
+    overflow:vivible;
     background:#fff;
   }
   .jotform-iframe{
