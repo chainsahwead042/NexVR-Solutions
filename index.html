@@ -2096,7 +2096,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal();
 jotformFrame.addEventListener('load', () => {
   jotformLoading.style.display = 'none';
   jotformFrame.classList.add('loaded');
-  window.scrollTo(0,0);
+  if(overlay.classList.contains('open')) window.scrollTo(0,0);
 });
 
 /* =========================================================
@@ -2208,5 +2208,14 @@ function escapeAdminHTML(s){
     }
   });
 </script>
+
+<script>
+  window.addEventListener('message', function(event){
+    if(typeof event.data !== 'string') return;
+    if(event.data.indexOf('submission-completed') === -1) return;
+    window.top.location.href = 'https://cal.com/nexvr-solutions/nexvr-solutions';
+  });
+</script>
+
 </body>
 </html>
