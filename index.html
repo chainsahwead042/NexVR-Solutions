@@ -2214,9 +2214,17 @@ function escapeAdminHTML(s){
 
 <script>
   window.addEventListener('message', function(event){
-    if(typeof event.data !== 'string') return;
-    if(event.data.indexOf('submission-completed') === -1) return;
-    window.top.location.href = 'https://cal.com/nexvr-solutions/nexvr-solutions';
+    let data = event.data;
+    if (typeof data === 'object' && data !== null) {
+      try { data = JSON.stringify(data); } catch(e) { return; }
+    }
+    if (typeof data !== 'string') return;
+
+    console.log('JotForm message:', data); // remove once confirmed working
+
+    if (data.indexOf('submission-completed') !== -1 || data.indexOf('submissionCompleted') !== -1) {
+      window.top.location.href = 'https://cal.com/nexvr-solutions/nexvr-solutions';
+    }
   });
 </script>
 
