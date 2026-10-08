@@ -318,7 +318,6 @@ document.querySelectorAll('.strip').forEach(strip => {
     strip.scrollTo({left: target, behavior: 'smooth'});
     clearTimeout(t); t = setTimeout(() => paused = false, 2400);
   }));
-});
 
 /* ---------- overlays ---------- */
 const open = el => { el.classList.add('open'); document.body.style.overflow = 'hidden'; };
